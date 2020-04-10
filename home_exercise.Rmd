@@ -1,0 +1,76 @@
+---
+title: "Home exercise: check your R understanding"
+author: "Mark Ziemann"
+output: html_document
+theme: cosmo
+---
+
+### Question 1
+
+> Do you know the difference between Rstudio and R?
+
+R is the computing language, whereas Rstudio is the interface (integrated development environment). Rstudio has several features which make coding in R easier than just typing commands into the console. It has a text editor with syntax highlighting, global environment contents, file navigator, git integration, plot window and other features.
+
+### Question 2
+> Can you make a histogram or box plot of mpg values from the mtcars dataset?
+
+The `boxplot` and `hist` commands can be used to create boxplotsand histograms. The argument `mtcars$mpg` should be used.
+```{r,question2,echo=TRUE}
+boxplot(mtcars$mpg)
+hist(mtcars$mpg)
+```
+
+### Question 3
+> Can you subset a dataframe like mtcars to identify the cars with mpg greater than 25?
+
+There are two common ways to do this; with `subset` and with the square brackets `[]`.
+```{r,question3,echo=TRUE}
+# with subset command
+subset(mtcars,mpg>25)
+# or with square brackets
+mtcars[mtcars$mpg>25,]
+```
+
+### Question 4
+> Can you re-order a dataframe like mtcars by mpg values and save it as a different object? 
+
+This is tricky and I normally take a 2 step approach with `order` inside square brackets `[]`.
+```{R,question4,echo=TRUE}
+# order(mtcars$mpg)
+# mtcars[rows,cols]
+# use <- to save to a different object
+mtcars2 <- mtcars[order(mtcars$mpg),]
+```
+
+### Question 5
+> How can you properly import a csv and tsv file? 
+
+Importing data in csv and tsv files needs to be done carefully. A command such as read.table can be used, but the options need to be set correctly. If the data is in tab separated format, then `read.table` will recognise it. Sometimes setting the separator to "\t" is necessary. If it is a csv file, then `read.csv` would be the best function to read it. if the data file has headings (column names), then `headers = TRUE` needs to be set. If the first row contains row names, then the `row.names=1` option should be set. if the table contains data in strings then we will need to set the `stringsAsFactors=FALSE` option because the default behavior is to convert non numerical data such as strings to factors. Finally, commands `head` and `str` should be used to confirm that the data have been imported properly.
+
+```{r,question5,echo=TRUE}
+# first write out a table to a file in tsv format
+write.table(mtcars,file="mtcars.tsv",quote=FALSE,row.names=TRUE,sep="\t")
+# read in the tsv file 
+x<- read.table("mtcars.tsv",header=TRUE,row.names=1,sep="\t")
+head(x)
+str(x)
+# first write out a table to a file in csv format
+write.table(mtcars,file="mtcars.tsv",quote=FALSE,row.names=TRUE,sep=",")
+# read in the tsv file 
+x<-read.table("mtcars.tsv",header=TRUE,row.names=1,sep=",")
+head(x)
+str(x)
+```
+### Question 6
+> Can you save an Rsession to a file  and then load it again later?
+
+This can be done fairly easily using the commands shown below:
+```{r,question6,echo=TRUE}
+save.image("mysession.RData")
+load("mysession.RData")
+```
+
+### Some information about the R version for reproducibility
+```{r,session,echo=TRUE}
+sessionInfo()
+```
