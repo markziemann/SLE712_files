@@ -21,6 +21,7 @@ myblastn <- function(myseq,db) {
       "qstart","qend","sstart","send","evalue","bitscore")
   }
   unlink(c(mytmpfile1,mytmpfile2))
+  res <- res[order(-res$bitscore),]
   res
 }
 
