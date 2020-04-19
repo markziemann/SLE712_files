@@ -38,7 +38,7 @@ myblastn_tab <- function(myseq,db) {
   # probably need to add headers here
   res <- NULL
   if (file.info(mytmpfile2)$size > 0 ) {
-  res <- read.csv(mytmpfile2,sep="\t",header=FALSE)
+    res <- read.csv(mytmpfile2,sep="\t",header=FALSE)
     colnames(res) <- c("qseqid","sseqid","pident","length","mismatch","gapopen",
       "qstart","qend","sstart","send","evalue","bitscore")
   }
