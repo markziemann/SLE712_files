@@ -7,11 +7,9 @@ output:
         toc: true
 theme: cosmo
 ---
-https://github.com/markziemann/SLE712_files/blob/master/apply.Rmd
-
+Source: https://github.com/markziemann/SLE712_files/blob/master/apply.Rmd
 # Introduction
 In this lesson we'll be taking your R skills to the next level with functions, conditionals, loops and vectorisation.
-
 # Functions
 A function is a stored command which can be rerun with different inputs. Functions are normally more than one line. Your function can specify many inputs. `return` is used to select what data should be returned to the user.
 ```{r}
@@ -29,13 +27,11 @@ cubedsum <- function(x,y) {
 }
 cubedsum(3,4)
 ```
-
 # Conditionals
 Commonly your workflow will need to adapt to different inputs. For example if a file already exists, you may not want to over-write it. This is the general format of an `if` statement in R:
 ```{r,eval=FALSE}
 if (condition) {command to run if TRUE} 
 ```
-
 Most of the time the command to run is written on a new line. Many times we need to run more than one command.
 ```{r,eval=FALSE}
 if (condition) {
@@ -43,13 +39,11 @@ if (condition) {
     command2 to run if TRUE
 } 
 ```
-
 If we only want to execute the command if FALSE, then we can add `!` to toggle the conditional.
 ```{r}
 2>3
 !2>3
 ```
-
 Here is how it looks in an actual `if` statement.
 ```{r,eval=FALSE}
 if (!condition) {
@@ -57,7 +51,6 @@ if (!condition) {
     command2 to run if FALSE
 } 
 ```
-
 We can add `else` to select from two options
 ```{r,eval=FALSE}
 if (condition) {
@@ -66,7 +59,6 @@ if (condition) {
     command2 to run if FALSE
 }
 ```
-
 Here is a real life example.
 ```{r}
 if (!file.exists("mtcars.tsv")) {
@@ -93,7 +85,6 @@ if (file.exists("mtcars.tsv")) {
   message("File written")
 }
 ```
-
 We can use Boolean operators to come of with more sophisticated conditional:
 ```{r}
 # & = AND
@@ -102,10 +93,8 @@ if(3>2 & 5>10) {print("ok")}
 # | = OR
 if(3>2 | 5>10) {print("ok")}
 ```
-
 # Loops
 In data analysis it is common to repeat a task with different inputs. In most computer languages a `for` loop would be used. This can be done in R like this:
-
 ```{r}
 for (i in c("a","b","c")) {
   print(i)
@@ -143,7 +132,7 @@ sapply(dfs,median)
 # lapply output is always a list
 lapply(dfs,median)
 ```
-
+As you can see, vectorisation leads to shorter and more readable code.
 Naturally, you can use your custom functions with `sapply` and other `apply` family functions. Here I've created a function to calculate the mean correlation in the columns of a matrix.
 ```{r}
 meancor <- function(x) {
@@ -153,12 +142,11 @@ meancor <- function(x) {
 sapply(dfs,meancor)
 ```
 # apply
-Sometimes you have a large data table and you want to run the same analysis on each row or column. To do this, use `apply`. The general syntax is
+Sometimes you have a large data table and you want to run the same analysis on each row or column. To do this, use `apply`. The general syntax is:
 ```{r,eval=FALSE}
 apply(x,MARGIN,FUN)
 ```
 Where `x` is the object (df or mx) to work on. MARGIN is either 1 for rows and 2 for columns. FUN is the function to ron on the data.
-
 ```{r}
 # row medians
 apply(df1,1,median)
@@ -177,6 +165,23 @@ mean(replicate(1000,cointoss()))
 mean(replicate(10000,cointoss()))
 ```
 
+# Test your understanding
+
+### Question 1
+Create a function that calculates the cubed root for a number
+
+### Question 2
+Use a for loop to calculate the cubed root for the numbers 44,77,99,123
+
+### Question 3
+Use `sapply` to calculate the cubed root for the numbers 44,77,99,123
+
+### Question 4
+Use `if` to test whether object `x` exists and run `head` if it does exist.
+
+### Question 5 
+Use `apply` to get the maximum value in each column of `df1`.
+`df1<-matrix(rbinom(100,50,0.8),nrow = 5)`
 
 # Session
 ```{r}
