@@ -1,0 +1,27 @@
+---
+title: "Prac 2 revision"
+author: "Mark Ziemann"
+date: "20/04/2020"
+output:
+    rmarkdown::html_document:
+        toc: true
+theme: cosmo
+---
+Source: https://github.com/markziemann/SLE712_files/blob/master/prac2revision.Rmd
+
+## Question 1
+What are some of the benefits of using version control if you're working on a solo project?
+
+## Question 2
+What are the main benefits of using version control if you're working on a team project?
+
+## Question 3
+What sort of documentation is required in a data analysis project?
+
+## Question 4
+Why is Rmarkdown useful for generating data analysis reports?
+
+## Question 5
+What is the general process to make change to a GitHub repository file within Rstudio?
+
+
