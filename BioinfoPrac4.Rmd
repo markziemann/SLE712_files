@@ -1,0 +1,253 @@
+---
+title: "Bioinformatics prac 3: working with sequence data in R"
+author: "Mark Ziemann"
+date: "22/04/2020"
+output:
+    rmarkdown::html_document:
+        toc: true
+theme: cosmo
+---
+
+Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac4.Rmd
+
+
+# Introduction
+
+In this practical we will use all the foundational skills we have been developing over the past three sessions to solve a bioinformatics based problem.
+
+One of the key skills in bioinformatics is the ability to pickup and use tools developed by others. Today we will be using BLAST. You may have used it before in an internet browser, but today we will be learning how to run large scale analyses within R. The fundamental skills you learn in this practical will not just allow you to complete the assessment, but provide you with the basis to learn and apply many bioinformatics tools.
+
+BLAST is short for Basic Local Alignment Search Tool. As the name suggests, it is a search tool which allows us to query a database of many sequences with one or a few sequence of interest.
+
+MAFFT is a global alignment tool, suited to comparing a few sequences with one another. It is faster than other tools like CLUSTALW
+
+In this prac we will be learning how to run BLAST searches and create multiple sequence alignments within R. 
+
+We will be working with SARS-CoV-2 sequences. It is important to become familiar with the genomic features of this virus. It has a linear positive-sense single-stranded RNA genome which is approximately 30 kilobases (kbp). This genome encodes approximately 26 proteins of varying lengths from 12 open reading frames. Here are some useful resources for SARS-CoV-2 genomic information
+
+* [The UCSC genome browser](http://genome.ucsc.edu/)
+
+* [GenBank](https://www.ncbi.nlm.nih.gov/genbank/sars-cov-2-seqs/)
+
+# Hypothetical situation
+We have obtained a genome sequence of a SARS-CoV-2 isolate resonsible for a severe outbreak on the *Spirit of the Seas* cruise ship which resulted in infection of 60% of passengers on board and a mortality rate of 20%. It is up to us to investigate the genome sequence and try to understand what features are unique to this strain, which might provide clues toward it's high mortality rate.
+
+# Prerequisite libraries and sources
+There are some packages that we will need to get things working. `seqinr` is a package designed to process and analyse sequence data. `R.utils` provides the ability to extract compressed files. We will need an R interface to run BLAST searches called `rBLAST`. `ape` provides clustal alignment capability and `adegenet` converts sequence data between major formats. In addition, we "source" two functions which I have prepared earlier.
+
+```{r,libs}
+library("seqinr")
+library("R.utils")
+library("rBLAST")
+library("ape")
+library("ORFik")
+library("Biostrings")
+source("https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part2_files/mutblast_functions.R")
+
+# temporary only
+source("~/projects/SLE712_files/bioinfo_asst3_part2_files/mutblast_functions.R")
+```
+
+# Download the SARS-CoV-2 sequences
+A batch of 785 genome sequences were downloaded from the [NCBI Virus](https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/virus?SeqType_s=Nucleotide&VirusLineage_ss=SARS-CoV-2,%20taxid:2697049&Completeness_s=complete) resource page on the 17th April 2020. These have been uploaded to a webserver and can be accessed by this [link](http://dee2.io/tmp/SARS-CoV-2-seqs.fa.gz).
+```{r,seq_db_dl}
+download.file("http://dee2.io/tmp/SARS-CoV-2-seqs.fa.gz",destfile = "SARS-CoV-2-seqs.fa.gz")
+# uncompress the file
+R.utils::gunzip("SARS-CoV-2-seqs.fa.gz",overwrite=TRUE)
+# create the blast DB
+makeblastdb("SARS-CoV-2-seqs.fa",dbtype="nucl", "-parse_seqids")
+```
+# Download the Spirit of the Seas (SOTS) sequence
+The sequencing lab has made the genome sequence available for the isolate which caused the outbreak on ship which can be downloaded [here](http://dee2.io/tmp/SOTS_2020-03-27.fa.gz).
+```{r,sots_dl}
+download.file("http://dee2.io/tmp/SOTS_2020-03-27.fa.gz", destfile = "SOTS_2020-03-27.fa.gz")
+R.utils::gunzip("SOTS_2020-03-27.fa.gz",overwrite=TRUE) # uncompress the file
+SOTS <- read.fasta("SOTS_2020-03-27.fa") 
+str(SOTS)
+sots <- SOTS[[1]]
+sots[1:50]
+str(sots)
+# get sequence length and calculate the GC content
+seqinr::getLength(sots)
+seqinr::GC(sots)
+```
+
+# A function to run a BLASTN search
+We sourced a function that ran blast searches in R. This function is required because blastn is a unix shell tool. You don't need to know exactly how it works, just that you will also need it for assessment 3. The function requires two inputs (1) the query sequence (R object) and the other is the database (system file). The output is a table of BLAST results.
+```{r,myblastn_tab}
+myblastn_tab
+```
+
+# BLAST Search for SARS-CoV-2 genomes with the highest similarity to SOTS
+One of the first things we can do is to search the SOTS sequence against the contents of the NCBI database. This may provide clues as to the origin of the SOTS isolate.
+```{r,blast1}
+res <- myblastn_tab(myseq = sots, db = "SARS-CoV-2-seqs.fa")
+# have a look at the BLAST results
+str(res)
+# it is important here to store the sseqid because we will need it
+# later to determine whether BLAST matches the gene of origin
+head(res)
+hits <- as.character(res$sseqid[1:3])
+hits
+hits <- c(hits,"NC_045512") # NC_045512 is the reference genome (Wuhan)
+hits
+```
+
+# Run a multiple sequence alignment of SOTS and the top hits 
+Now that we know which of the taxa are most similar to SOTS, now we can see how different the sequences are to one another with a multiple sequence alignment using MAFFT. We can select to generate a tree in Newick format.
+```{r,curate_seqs}
+db <- read.fasta("SARS-CoV-2-seqs.fa")
+str(db[1:6])
+head(names(db))
+myseqs <- db[which(names(db) %in% hits)] # extract the names of the top hits
+myseqs <- c(myseqs,SOTS) # add the SOTS sequence
+seqinr::write.fasta(myseqs,names=names(myseqs),file.out = "myseqs.fa")
+```
+
+```{bash,mafft,results="hide"}
+mafft --auto --clustalout --treeout myseqs.fa 
+```
+
+# Tree generation
+Next we can use the tree viewing ability of the `ape` package. 
+```{r,treeplot}
+# read in the file as a single string
+treetext <- paste(readLines("myseqs.fa.tree"),collapse = " ")
+# attach a semicolon because it is required by ape
+treetext <- paste(treetext,";")
+treetext
+tree <- ape::read.tree(text=treetext)
+ape::plot.phylo(tree)
+```
+
+# In detail comparison of SOTS and the top BLAST hit
+We can run a BLASTN to create a pairwise alignment to identify the main differences between SOTS and the top hit.
+```{r,detailed_comparison}
+tophit <- db[which(names(db) %in% hits[1])] # extract the names of the top hit
+tophit[1:50]
+seqinr::write.fasta(tophit,names=names(tophit),file.out = "tophit.fa")
+makeblastdb("tophit.fa",dbtype="nucl", "-parse_seqids")
+res <- myblastn(myseq = sots, db = "tophit.fa")
+cat(res,fill=TRUE)
+```
+
+# Predict protein sequences
+Open reading frames begin with a start codon AUG and end with a stop codon (UAA,UAG,UGA). We will be using `BioStrings`, `ORFik` and `GenomicRanges`.
+```{r,orfs}
+# read the fasta file
+sots <- readDNAStringSet("SOTS_2020-03-27.fa")
+# find the coordinates of the ORFs
+sots_orf <- ORFik::findORFs(sots,startCodon = "ATG", minimumLength = 100)
+# sort the ORFs by location
+sots_orf <- GenomicRanges::sort(sots_orf)
+
+# Now the same for the tophit
+tophit <- readDNAStringSet("tophit.fa")
+tophit_orf <- ORFik::findORFs(tophit,startCodon = "ATG", minimumLength = 100)
+tophit_orf <- GenomicRanges::sort(tophit_orf)
+
+sots_orf
+tophit_orf
+
+# now extract the sequences with the approach
+# DNAStringSet(sots,start, end)
+mystart = start(sots_orf)[[1]][1]
+myend = end(sots_orf)[[1]][1]
+sots_orf1 <- DNAStringSet(sots,start = mystart, end = myend)
+sots_orf1_aa <- Biostrings::translate(sots_orf1)
+
+# but that's slow for 8 sequences what if we could do them all at the same time?
+# we can cycle through them with the sapply function
+# sapply(list,function) 
+# list in this case is cycling through 1 to 
+mystart <- sots_orf@unlistData@start
+myend <- mystart + sots_orf@unlistData@width
+sots_orf_aas <- sapply(1:length(sots_orf[[1]]),function(i) {
+    y <- unlist(DNAStringSet(sots,start = mystart[i], end = myend[i])) 
+    Biostrings::translate(y)
+})
+sots_orf_aas[1:3]
+
+mystart <- tophit_orf@unlistData@start
+myend <- mystart + tophit_orf@unlistData@width
+tophit_orf_aas <- sapply(1:length(tophit_orf[[1]]),function(i) {
+    y <- unlist(DNAStringSet(tophit,start = mystart[i], end = myend[i])) 
+    Biostrings::translate(y)
+})
+tophit_orf_aas[1:3]
+```
+
+# Pairwise alignment of protein sequences
+Let's take a look at the protein sequence differences using `BioStrings`.
+```{r,proteinalignment}
+# this way we can compare the 1st sequence of each list
+aln <- pairwiseAlignment(tophit_orf_aas[[1]],sots_orf_aas[[1]])
+# percent identity
+pid(aln)
+# character string mashup
+compareStrings(aln)
+
+# Now repeat for all 8 sequences using the same sapply trick
+pids <- sapply(1:length(sots_orf_aas),function(i) {
+    aln <- pairwiseAlignment(tophit_orf_aas[[i]],sots_orf_aas[[i]])
+    pid(aln)
+})
+
+pids
+
+# seq 4
+aln <- pairwiseAlignment(tophit_orf_aas[[4]],sots_orf_aas[[4]])
+pid(aln)
+compareStrings(aln)
+```
+
+# The mutator function
+It randomly replaces a number of DNA bases with a random base. This is not strictly related to the hypothetical scenario but will be useful to complete the assessment.
+```{r,mutator}
+mutator
+# lets take a look at ORF3A sequence
+ORF3a <- DNAStringSet(tophit,start = mystart[4], end = myend[4])
+# extract as a simple string
+ORF3a <- toString(ORF3a)
+# convert string to a vector of characters
+ORF3a <- s2c(ORF3a)
+ORF3a
+# create a mutated copy with 100 substitutions
+ORF3a_mut <- mutator(myseq=ORF3a,100)
+
+# now create a pairwise alignment
+ORF3a_mut_ <- DNAString(c2s(ORF3a_mut))
+ORF3a_ <- DNAString(c2s(ORF3a))
+aln <- Biostrings::pairwiseAlignment(ORF3a_,ORF3a_mut_)
+pid(aln)
+nmismatch(aln)
+```
+
+# Testing the limits of BLAST
+After adding some mismatches to ORF3a, we can check whether BLAST is still able to recognise ORF3a.
+```{r,testblast}
+# first need to write the blast index
+write.fasta(ORF3a,names="ORF3a",file.out = "ORF3a.fa")
+makeblastdb(file="ORF3a.fa",dbtype = "nucl")
+
+# test with 100 mismatches
+ORF3a_mut <- mutator(myseq=ORF3a,100)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
+ORF3a_mut <- mutator(myseq=ORF3a,200)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
+ORF3a_mut <- mutator(myseq=ORF3a,300)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
+ORF3a_mut <- mutator(myseq=ORF3a,220)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
+```
+The complication is that if we repeat the value for 220 multiple times, the result is not consistent. That means it is necessary to repeat the test many times to get an average value. Here is an example of a chart which could be used:
+![alt text](example.png "Example Plot")
+

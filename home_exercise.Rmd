@@ -1,9 +1,12 @@
 ---
 title: "Home exercise: check your R understanding"
 author: "Mark Ziemann"
+date: "20/04/2020"
 output: html_document
 theme: cosmo
 ---
+
+Source: https://github.com/markziemann/SLE712_files/blob/master/home_exercise.Rmd
 
 ### Question 1
 

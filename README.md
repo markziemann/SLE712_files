@@ -18,3 +18,6 @@ This is an Rmarkdown document that revises work done in prac 2 where we began wo
 
 ## apply.Rmd
 This is an Rmarkdown document will be covered in prac 3.
+
+## BioinfoPrac4
+In this prac we will be applying everything we've learned to begin analysing sequence data in R.
