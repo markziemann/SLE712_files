@@ -8,9 +8,13 @@ output:
 theme: cosmo
 ---
 Source: https://github.com/markziemann/SLE712_files/blob/master/apply.Rmd
+
 # Introduction
+
 In this lesson we'll be taking your R skills to the next level with functions, conditionals, loops and vectorisation.
+
 # Functions
+
 A function is a stored command which can be rerun with different inputs. Functions are normally more than one line. Your function can specify many inputs. `return` is used to select what data should be returned to the user.
 ```{r}
 cubed <- function(x) {
