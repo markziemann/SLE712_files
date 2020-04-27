@@ -1,0 +1,376 @@
+---
+title: "R Cheatsheet"
+author: "Mark Ziemann"
+date: "27/04/2020"
+output:
+    rmarkdown::html_document:
+        toc: true
+theme: cosmo
+---
+Source: https://github.com/markziemann/SLE712_files/cheatsheet.Rmd
+
+In this document we will be revising everything we covered in our Rstudio work in the form of a cut-down R markdown file.
+
+## Week 1
+### Arithmetic
+We first covered arithmetic. Here are some examples.
+```{r}
+1+2
+# comments can be placed after a hash
+10000^2
+sqrt(64)
+2^3
+27^(1/3) # cube root
+27^1/3 # parentheses matter!
+```
+
+### Math on vectors
+Math can also be done on vectors (a vector is a series of numbers). Let's first save the vector as `a`.
+
+```{r}
+a <- c(1,10,100) # use the c() to create a vector
+sum(a) # calculate the sum of a vector
+mean(a) # calculate the mean of a vector
+median(a) # calculate the median of a vector
+max(a) # show the maximum value in a vector
+min(a) # show the minimum value in a vector
+range(a) # show maximum and minimum value
+?range # use the ? to get help on a command
+```
+
+### Understanding object types
+It is important to understand object types. It is a major source of errors in R. Currently `a` is a numerical vector. Here are some commands to determine an object's type.
+
+```{r}
+str(a) # get data structure
+typeof(a) # get data type (can be deceiving)
+class(a) # get data class
+
+b = "x1"
+str(b)
+typeof(b)
+class(b)
+
+c <- c("abc","def","ghi")
+str(c)
+typeof(c)
+class(c)
+```
+
+### Square brackets
+Subsetting vectors can be done with square brackets `[]`.
+
+```{r}
+a[2]  # get 2nd value
+a[2:3] # get values in order
+a[c(1,3)] # get values out of order
+a[c(2,1)] # get values in reverse order
+```
+
+### Reordering vectors
+Reordering vectors can be done with square brackets `[]` as well.
+```{r}
+order(a) # rank the values from lowest to highest
+order(-a) # rank values for highest to lowest
+a[order(-a)] # reorder from highest to lowest 
+a <- a[order(-a)] # reorder and save as a
+```
+
+### Diagnosing object types/classes
+We can find out a data type with the following commands.
+
+```{r}
+is.numeric(a) # check if numeric (value, vector or table)
+is.character(b) # check if numeric (value, vector or table)
+is.vector(c) # check if structure is vector or other data  type such as list or df
+is.list(a) # check if structure is list
+is.integer(a) # check if data is integers
+```
+
+### Coercing types
+We can coerce some data types to others.
+
+```{r}
+# for example, data can be imported as strings
+d <- c("1","3","5","654")  # create a new vector of strings
+str(d) # confirm the structure
+d <- as.numeric(d) # then convert to numeric
+str(d) # confirm the structure
+d <- as.integer(d) # coerce to integer
+str(d) # confirm the structure
+# we can give vector values names
+names(d) <- c("s1","s2","s3","s4")
+names(d) # show the names
+str(d) # named vector looks a bit different in str
+d <- as.list(d) # coerce data to a list
+str(d) # confirm the structure
+d # have a look at the object in the console
+```
+
+## Pause and check your understanding
+At this point you will be getting familiar with some of R's data types. Can you describe clearly what the differences are between character strings, numerical values, vectors and lists? Do some reading online and take some notes if necessary.
+
+## Two-dimensional data tables
+Data frames and matrices are important data types in R.
+
+### Converting vectors and dataframes
+We can convert vectors to data frames and vice versa.
+
+```{r}
+b<-c(1.23,2.34,4.87,21.1) # create a new numerical vector
+b<-as.data.frame(b) # coerce to df
+str(b)
+b
+# set row names
+rownames(b)<-c("sample1","sample2","sample3","sample4") 
+b
+colnames(b)="B" # set the column names
+b
+```
+
+### The dollar-sign notation
+The dollar sign $ allows us to address individual columns of a dataframe.
+If we specify a column name that doesn't exist, we can create a new column with that name.
+
+```{r}
+b$B # extract a column of data from a df and show as a vector
+b$D <- c(8.45,6.15,47.4,56.1) # create a new column of data
+b
+b$F<-b$B+b$D # doing math with columns in dataframes!
+b
+```
+
+It's possible to do some mathematical operations on a column or whole df.
+```{r}
+b$D*100 # multiply a column by a number
+b*100 # multiply a whole data frame by a number
+b^2 # square each value of a data frame
+str(b) # str makes sense most of the time
+class(b) # makes sense as well
+typeof(b) # sometimes deceptive
+str(as.matrix(b)) # see how matrix is stored differntly internally
+str(b)
+```
+
+
+### adding columns and rows to a dataframe
+`cbind` adds new columns and `rbind` adds new rows.
+
+```{r}
+G<-c(78.03,54.8,98.1,0.2) 
+b<-cbind(b,as.data.frame(G)) # bind columns together
+b
+sample5 <- c(12.1, 3.84, 549.1, 111.9)
+b<-rbind(b,sample5,make.row.names =T) # bind rows together
+b
+rownames(b)[5]<-"sample5" # change a single row name
+b
+```
+
+### other operations we can do on a dataframe or matrix
+Here are some key commands that will help you analyze data and complete Assignment 3 as well.
+
+```{r}
+t(b) # transpose a df or matrix
+nrow(b) # get number of rows
+ncol(b) # get number of columns
+dim(b) # get number of rows and columns
+rowMeans(b) # get means of all rows
+colMeans(b) # get means of all columns
+rowSums(b) # get sum of all rows
+colSums(b) # get sum of all columns
+summary(b) # get a nice summary of each column
+mean(b) # one does not simply calculate mean of a dataframe
+mean(as.matrix(b)) # but it does work for a matrix
+```
+### Dot and line plots
+Now let's explore plots
+```{r}
+plot(b$B) # dot plot a vector of values 
+plot(b$B, type = "l") # line plot a vector of values 
+plot(b$B, type = "b") # plot both lines and dots
+plot(b$B, b$F) # scatter plot of two vectors
+plot(b$B, b$D, pch=19) # pch=19 gives nice circles
+points(b$F,b$G,col="red",pch=19) # add red points. But make sure axis limits are wide enough!!
+mtext("B vs D in black ; F vs G in red") # add a sub-heading
+```
+
+### Barplot and histograms
+So that's how to make a basic dot/line plot. Make sure you add axis labels with `xlab=` and `ylab=` options. Include the units of measurement and a main heading or subheading to better describe the data. Now let's look at some other basic chart types.
+
+```{r}
+barplot(b$B,names.arg=rownames(b)) # barplot works nicely if you supply the names.arg
+# here is how you can add axis labels and main header
+barplot(b$B,names.arg=rownames(b),ylab="Elapsed time (s)",
+    main="Time trial")
+# sometimes a horizontal chart looks better
+barplot(b$B,names.arg=rownames(b),xlab="Elapsed time (s)",
+    main="Time trial",horiz=T, las=2) 
+# here's how to make a histogram
+hist(as.matrix(b)) 
+# alter the number of histogram bins
+hist(as.matrix(b),10)
+```
+
+### Histogram and boxplot with simulated data
+The above histogram example uses a very small dataset. I think it would be better if we could use a bigger one. So lets create some new data with `rnorm`. This is a command to sample data from a distribution. Then we can get a nice looking histogram and introduce boxplot. Can you see the difference in the distributions in object `d` and `e`?
+
+```{r}
+d <- rnorm(n = 100,mean = 10,sd = 20) # sample 100 values from a distribution with mean=10 and SD=20
+d
+e <- rnorm(n = 100,mean = 10,sd = 50) 
+hist(d)
+hist(e)
+boxplot(d,e) 
+```
+
+# Export the PDF file
+If you want to download the chart, you can use the export button in the lower right Rstudio window. A better alternative, especially for multiple charts is to create a multi-page PDF then download this file.
+
+```{r}
+pdf("myplots.pdf") # create a new, empty PDF
+hist(d) # then add charts one by one
+hist(e) # you can add lots and lots
+boxplot(d,e) # and lots
+dev.off() # when finished, you need to run dev.off() otherwise the PDF will appear as corrupted.
+```
+
+Check whether the file has been created in your current working directory and click on it to open in the web browser and find the button to save it.
+
+## Week 2
+### Factors
+Let's work with factors. Factors are an efficient way to store categorical data.
+
+```{r}
+g<-as.factor(c("M","M","F","F","M")) # in this command we are coercing strings to factors
+str(g) # see how factors are represented in the object g
+# We can specify the levels like this
+f<-factor(c("early","late","ontime","early","late","ontime","early"), 
+          levels = c("early", "ontime", "late")) 
+f
+str(f)
+# Some factors are "ordinal" in that they have values that relate to each other
+# such as high medium and low. we can specify this
+f<-factor(c("early","late","ontime","early","late","ontime","early"), 
+          levels = c("early", "ontime", "late"), ordered =TRUE) 
+f
+str(f)
+as.character(f) # coerse factor to character
+as.numeric(f) # coerce factor to numeric
+
+```
+
+### Subsetting data frames part 1
+We can subset a column from a data frame with the `df$col` notation. With the `[rows,cols]` square brackets we can select both rows and columns.
+```{r}
+data(mtcars) # make sure that mtcars is available
+mtcars # show mtcars in the console
+mtcars$mpg # extract one column with $ notation
+mtcars[,"mpg"] # it can also be done with [] notation by specifying the col name
+mtcars[,1] # or specifying the location. Here we extract  the 1st col
+mtcars[,1:3] # range of columns
+mtcars[,c(3,1,8)] # columns in different order
+mtcars[1:4,] # rows as well
+mtcars[1:4,1:6] # rows and columns
+```
+### Subsetting data frames part 2
+The above is useful, but most subsetting jobs are based on the values inside the data frame. 
+
+```{r}
+mtcars$mpg>20 # ask the question which mpg values are >20
+mtcars[,"mpg"]>20 # same thing
+mtcars[,1]>20 # same thing again
+which(mtcars[,1]>20) # Which command extracts all the TRUE values
+mtcars[which(mtcars[,1]>20),] # use which inside the square brackets to subset cars with mpg>20
+subset(mtcars, mpg>20) # a simpler way to do it.
+subset(mtcars, mpg>20 & cyl>5) # multiple conditions with AND
+subset(mtcars, mpg>20 | cyl>5) # multiple conditions with OR 
+```
+
+While `subset` command is easier, you still need to know the `[]` way of doing it because that is more versatile and used in the next section.
+
+### Reordering a data frame
+It is a very common procedure to reorder a dataframe based on the values. Note that it is a 2 step process. 1st to rank the values and 2nd to extract rows/cols in that order. This is likely to be on the exam. 
+
+```{r}
+order(mtcars$mpg) # rank the values in a column (vector)
+mtcars[order(mtcars$mpg),] # stick the order command in the square brackets to extract the rows in order.
+mtcars[order(-mtcars$mpg),] # reverse the order
+mtcars[order(rownames(mtcars)),] # reordering based on the alphabetical order of the rownames
+```
+
+### Linear regression example
+Linear regression is one of those fundamental, essential skills in R. Let's take a look at the correlation between number of cylinders and mpg (or 1/mpg).
+
+```{r}
+mtcars[,1:2] # extract 1st and 2nd column
+cor(mtcars[,1:2]) # simple correlation
+pairs(mtcars[,1:2]) # pairs plot can be useful to see relationships
+plot(mtcars$cyl,mtcars$mpg) # scatterplot
+plot(mtcars$cyl,1/mtcars$mpg) # 1/mpg gives the fuel economy
+plot(mtcars$cyl,1/mtcars$mpg,xlab="cylinders",ylab="gallons per mile",pch=19) 
+```
+
+In any chart it is really important to give meaningful x and y labels.
+
+```{r}
+mylm<-lm(1/mpg ~ cyl, data=mtcars) # calculate the linear model
+str(mylm) # the output is a big list object
+summary(mylm) # summary helps to make sense of it
+summary(mylm)$r.squared # we can extract values with summary
+signif(summary(mylm)$r.squared,3)  # signif helps to limit the significant figures for presentation
+plot(mtcars$cyl, 1/mtcars$mpg, xlab="cylinders", 
+     ylab="gallons per mile", pch=19) 
+abline( mylm , lty=2,lwd=2,col="red") # make trend line
+# now we can extract some other values from the lm object to make a nice plot
+INT=as.numeric(signif(mylm$coefficients[1],3))
+SLOPE=as.numeric(signif(mylm$coefficients[2],3))
+MYR2=signif(summary(mylm)$r.squared,3)
+MYTEXT=paste("Intercept:",INT, " Slope:",SLOPE, " R^2:",MYR2)
+mtext(MYTEXT)
+```
+
+### Reading data from a file
+Reading in data from a file improperly is a major source of errors. For example if R doesn't recognise column headers, then it can lead to the data being recognised as strings instead of numerical values. In the worst cases, the strings are represented as factors; then when maths operations are done, the user gets results which are totally wrong. Let's have a look at the following typical example.
+
+```{r}
+# you will need to download the file first
+download.file(url = "https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part1_files/mydata.tsv", destfile = "mydata.tsv")
+# read.table a the command to read a table of data
+head(read.table("mydata.tsv"))
+x<-read.table("mydata.tsv") # typical way to import data, but be careful about how its imported
+typeof(x)
+str(x) # check the data. Is it saved as numeric??
+x <- read.table("mydata.tsv",header=TRUE ) # set header=TRUE if you have headers on your data
+str(x)
+x <- read.table("mydata.tsv", header=TRUE, row.names=1) # set row.names=1 if the 1st col is the row name
+head(x)
+str(x)  # check that it's numeric
+# here is another correct way to import especially if you have gene names (strings)
+x<-read.table("mydata.tsv",header=T,
+  stringsAsFactors=FALSE,sep="\t")
+str(x)
+# another correct way to import the data
+x<-read.csv("mydata.tsv",sep="\t", stringsAsFactors=FALSE)
+str(x)
+```
+
+### Saving R sessions
+This can help you save time especially if you have been running a large data analysis, you can save the results for future reference so you don't need to execute it again.
+
+```{r}
+# save a session
+save.image("mydata.RData")
+# now in the menu bar select “quit session”
+# then start new session
+# see if x is saved
+x
+# load session
+load("mydata.RData")#    see if x is saved x
+```
+
+### Session Info
+```{r}
+Sys.Date()
+sessionInfo()
+```

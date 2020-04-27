@@ -1,5 +1,5 @@
 ---
-title: "Bioinformatics prac 3: working with sequence data in R"
+title: "Bioinformatics prac 4: working with sequence data in R"
 author: "Mark Ziemann"
 date: "22/04/2020"
 output:
