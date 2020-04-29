@@ -45,7 +45,7 @@ library("Biostrings")
 source("https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part2_files/mutblast_functions.R")
 
 # temporary only
-source("~/projects/SLE712_files/bioinfo_asst3_part2_files/mutblast_functions.R")
+#source("~/projects/SLE712_files/bioinfo_asst3_part2_files/mutblast_functions.R")
 ```
 
 # Download the SARS-CoV-2 sequences
