@@ -42,9 +42,6 @@ library("ape")
 library("ORFik")
 library("Biostrings")
 source("https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part2_files/mutblast_functions.R")
-
-# temporary only
-#source("~/projects/SLE712_files/bioinfo_asst3_part2_files/mutblast_functions.R")
 ```
 
 # Download the SARS-CoV-2 sequences
@@ -61,7 +58,7 @@ The sequencing lab has made the genome sequence available for the isolate which 
 ```{r,sots_dl}
 download.file("http://dee2.io/tmp/SOTS_2020-03-27.fa.gz", destfile = "SOTS_2020-03-27.fa.gz")
 R.utils::gunzip("SOTS_2020-03-27.fa.gz",overwrite=TRUE) # uncompress the file
-SOTS <- read.fasta("SOTS_2020-03-27.fa") 
+SOTS <- seqinr::read.fasta("SOTS_2020-03-27.fa") 
 str(SOTS)
 sots <- SOTS[[1]]
 sots[1:50]
@@ -116,6 +113,7 @@ treetext <- paste(readLines("myseqs.fa.tree"),collapse = " ")
 treetext <- paste(treetext,";")
 treetext
 tree <- ape::read.tree(text=treetext)
+str(tree)
 ape::plot.phylo(tree)
 ```
 
@@ -180,7 +178,7 @@ tophit_orf_aas[1:3]
 Let's take a look at the protein sequence differences using `BioStrings`.
 ```{r,proteinalignment}
 # this way we can compare the 1st sequence of each list
-aln <- pairwiseAlignment(tophit_orf_aas[[1]],sots_orf_aas[[1]])
+aln <- Biostrings::pairwiseAlignment(tophit_orf_aas[[1]],sots_orf_aas[[1]])
 # percent identity
 pid(aln)
 # character string mashup
@@ -210,9 +208,10 @@ ORF3a <- DNAStringSet(tophit,start = mystart[4], end = myend[4])
 ORF3a <- toString(ORF3a)
 # convert string to a vector of characters
 ORF3a <- s2c(ORF3a)
-ORF3a
+str(ORF3a)
 # create a mutated copy with 100 substitutions
 ORF3a_mut <- mutator(myseq=ORF3a,100)
+str(ORF3a_mut)
 
 # now create a pairwise alignment
 ORF3a_mut_ <- DNAString(c2s(ORF3a_mut))
@@ -234,6 +233,14 @@ ORF3a_mut <- mutator(myseq=ORF3a,100)
 res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
 res
 
+ORF3a_mut <- mutator(myseq=ORF3a,150)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
+ORF3a_mut <- mutator(myseq=ORF3a,175)
+res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
+res
+
 ORF3a_mut <- mutator(myseq=ORF3a,200)
 res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
 res
@@ -242,9 +249,6 @@ ORF3a_mut <- mutator(myseq=ORF3a,300)
 res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
 res
 
-ORF3a_mut <- mutator(myseq=ORF3a,220)
-res <- myblastn_tab(myseq = ORF3a_mut, db = "ORF3a.fa")
-res
 
 ```
 The complication is that if we repeat the value for 220 multiple times, the result is not consistent. That means it is necessary to repeat the test many times to get an average value. Here is an example of a chart which could be used:
