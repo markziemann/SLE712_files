@@ -10,7 +10,6 @@ theme: cosmo
 
 Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac4.Rmd
 
-
 # Introduction
 
 In this practical we will use all the foundational skills we have been developing over the past three sessions to solve a bioinformatics based problem.
@@ -87,7 +86,7 @@ str(res)
 # it is important here to store the sseqid because we will need it
 # later to determine whether BLAST matches the gene of origin
 head(res)
-hits <- as.character(res$sseqid[1:3])
+hits <- as.character(res$sseqid[1:3]) 
 hits
 hits <- c(hits,"NC_045512") # NC_045512 is the reference genome (Wuhan)
 hits
