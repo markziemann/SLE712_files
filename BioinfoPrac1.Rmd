@@ -1,0 +1,410 @@
+---
+title: "Bioinformatics prac 1: Hello World!"
+author: "Mark Ziemann"
+date: "22/04/2020"
+output:
+    rmarkdown::html_document:
+        toc: true
+theme: cosmo
+---
+
+Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac1.Rmd
+
+## Introduction
+
+What is bioinformatics?
+
+It is data science techniques applied to biological or biomedical domains.
+
+This is important because biology and biomedicine are becoming more data-driven.
+This means it is becoming an essential skill to be able to process these huge datasets, 
+analyse them and create meaningful charts and tables.
+
+Bioinformatics is done in many languages including Perl, Python, Java, Matlab and more, so why R? 
+
+1. It is free and open source
+
+2. It works in Linux, Mac and Windows (and on the cloud)
+
+3. Is the premier language for numerical analysis and statistics
+
+4. It has best data visualisation options
+
+5. It has a vibrant and noob-friendly base of science users throughout the world
+
+6. There is a huge array of packages available on [CRAN](https://cran.r-project.org/) and [Bioconductor](https://www.bioconductor.org/). 
+
+7. Nearly everything you learn in R here can be applied to other fields of endeavour such as business, engineering and medicine.
+
+Therefore all of the bioinformatics content covered in this unit will be related to using R.
+We will be using the [Rstudio](https://rstudio.com/) application to help us managing the development process.
+It is a graphical interface with different panels and tools which makes the code development process easier and more efficient.
+You can log on to our Rstudio server here: http://118.138.234.73:8787/
+The username and password were provided to you by email. If you missed out
+
+This week, our goal is to learn:
+
+* how to use R studio interface
+
+* about different data objects in R
+
+* how to do basic math in R
+
+## The Rstudio interface
+
+Let's get to know the Rstudio interface a bit better.
+It consists of a menu bar at the top of the browser window and four panels below:
+
+| Menu Bar |
+|:----:|:----:|
+| Top left: Script (type and save your scripts here)   | Top right: Global Environment (R data objects you can work with) |
+| Bottom left: Console (commands are executed here)  |  Bottom right: Files, Plots and help pages  |
+
+If you cannot see the Script panel, click "New Script" on the menu bar and it should appear.
+
+Let’s watch a video together to learn the basics of the Rstudio environment.
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=5YmcEYTSN7k
+" target="_blank"><img src="http://img.youtube.com/vi/5YmcEYTSN7k/0.jpg" 
+alt="IMAGE ALT TEXT HERE" width="480" height="360" border="10" /></a>
+
+## Let's get started with using R!
+
+### Arithmetic
+
+The first thing we will cover in R is the different types of data structures. 
+Let’s go through the different data types together: https://www.statmethods.net/input/datatypes.html 
+
+Open up your Rstudio and try these commands by typing in the script panel and hitting the “Run” button or Ctrl+Enter, observing the output.
+
+The hash character `#` is used to include comments.
+Including comments help the user to understand the purpose of the commands.
+It is a good idea to add comments to your code. Any characters that come after the # are ignored.
+
+We'll start with some arithmetic.
+
+```{r,math1}
+
+1+2
+10000^2
+sqrt(64)
+
+```
+Notice that as you start typing commands like `sqrt` that Rstudio will give you suggestions, you can use the tab key to autocomplete.
+
+### Working with variables
+
+Use the `<-` back arrow or `=` to define variables.
+
+```{r,math2}
+
+s <- sqrt(64)
+s
+
+a <- 2
+b <- 5
+c <- a*b
+c
+
+```
+
+### Vectors
+
+We can also do operations on vectors of numbers.
+
+Vectors are specified with c-brackets like this `c(1,2,3)`
+
+```{r,math3}
+
+c(1,2,3)
+sum(c(1,10,100))
+mean(c(1,10,100))
+median(c(1,10,100))
+max(c(1,10,100))
+min(c(1,10,100))
+
+```
+
+
+### Saving variables
+
+To make things easier to read and write, we can save the vector as a variable `a`.
+Then we can work on `a`.
+
+We use the `<-` to save objects in R, but `=` also works.
+
+`length ` tells us the number of elements in the vector which is very useful.
+
+```{r,math4}
+
+a <- c(1,10,100)
+a
+2*a
+a+1
+sum(a)
+mean(a)
+median(a)
+sd(a)
+var(a)
+length(a)
+
+```
+
+### R object types
+
+Whenever we are using an R object we should check exactly what sort of object it is.
+This is the most common type of error you will encounter.
+
+We use the `str()` command to check the structure. 
+Other commands we can use to investigate the data structure include `class()` and `typeof()`
+
+The colon `:` can be used to specify series.
+For example 1:5 for numbers 1 to 5.
+
+Note the different object types here:
+
+A is a Numerical vector
+
+B is Numerical vector (series)
+
+C is a named numerical vector
+
+D is a character string
+
+E is a character vector
+
+F is a named character vector
+
+```{r,math5}
+
+A <- c(1,10,100)
+A
+str(A) 
+class(A)
+typeof(A)
+
+B <- 1:10 
+B
+str(B)
+class(B)
+typeof(B)
+
+C <- c("prime1"=2, "prime2"=3, "prime3"=5, "prime4"=7)
+C
+str(C)
+class(C)
+typeof(C)
+
+D <- "x1" 
+D
+str(D)
+class(D)
+typeof(D)
+
+E <- c("x1", "y2", "z3")
+E
+str(E)
+names(E) <- c("code1","code2","code3")
+E
+str(E)
+class(E)
+typeof(E)
+
+```
+Note how the names can be added during or after the vector is defined.
+
+### Factors
+
+Factors are an entirely different type of data in R.
+They are represented as non numeric categories, but are stored internally as numerical data.
+Typically factors are used in R for categorical data like biological sex.
+Here the example is an unordered category.
+
+```{r,factors1}
+
+x <- factor(c("single", "married", "married", "single","defacto","widowed"))
+x
+str(x)
+levels(x)
+
+```
+
+But it is possible to have ordered factors as well.
+
+Take this survey result about a product as an example, where respondents rate the food at a restaurant between very poor and very good.
+These responses have a natural order, so it makes sense to treat these as ordered factors.
+
+```{r,factors2}
+
+y <- c("good", "very good", "fair", "poor","good")
+str(y)
+yy <- factor(y, levels = c("very poor","poor","fair","good","very good"),ordered = TRUE)
+yy
+str(yy)
+levels(yy)
+
+```
+
+### Logicals
+
+R also uses `TRUE/FALSE` a lot, as a data type as well as an option when executing commands.
+
+It is also possible to have vectors of logical values.
+
+```{r,logicals}
+
+myvariable1 <- 0
+as.logical(myvariable1)
+
+myvariable2 <- 1
+as.logical(myvariable2)
+
+vals <- c(0,1,0,1,0,0,0,1,1,0,1,0,1,0)
+vals
+str(vals) 
+as.logical(vals)
+
+```
+
+### Subsetting vectors
+
+Next, we would like to subset vectors.
+To do this, we use square brackets and inside the square bracket we indicate which values we want, using 1 for the first and 2 for second and so on.
+
+See how it is possible to get the last and second last elements.
+
+We can subset vectors, run arithmetic operations and save the results to a new variable in a single line.
+
+```{r,vec_subset}
+
+a <- c(2:22,98,124,3002)
+length(a)
+a[2]
+a[3:4]
+a[c(1,3)] 
+a[length(a)]
+a[(length(a)-1)]
+
+x <- a[10:(length(a)-1)] * 2
+x
+
+```
+
+### Coersing R data into different types
+
+As shown above with commands like `factor` and `as.logical`, it os possible to convert objects into different types.
+
+Here are some further examples.
+
+Note that some conversions don't make sense, which can cause errors in your analysis.
+
+```{r,conv1}
+
+a <- c(1.9,2.7,3.3,5.1,9.9,0)
+a
+as.integer(a)
+as.character(a)
+as.logical(a)
+as.factor(a)
+
+b <- c("abc","def","ghi","jkl")
+b
+as.numeric(b)
+as.logical(b)
+as.integer(b)
+my_factor <- as.factor(b)
+as.numeric(my_factor)
+
+```
+
+### Creating random and semi random data
+
+This is used a lot in statistics and probability as well as simulation analysis.
+
+```{r,sample1}
+
+nums <- 1:5
+sample(x = nums, size = 3)
+sample(x = nums, size = 5)
+sample(x = nums ,size = 10, replace = TRUE)
+
+```
+
+We can also sample from distributions.
+Here we are sampling 5 numbers from a normal distribution around a median of 10 and standard deviation of 2
+
+```{r,distributions1}
+
+d <- rnorm(n = 5, mean = 10, sd = 2)
+d
+
+```
+
+Here we are sampling 20 numbers from a binomial distribution with a size of 50 and probability of 0.5
+
+```{r,distributions2}
+
+b <- rbinom(n = 20, size = 50, prob = 0.5)
+b
+mean(b)
+
+```
+
+### Basic plots
+
+Creating basic plots in R isn't very difficult.
+Here are some simple ones.
+
+Dot plot
+
+```{r,dot}
+
+a <- (1:10)^2
+a
+plot(a)
+
+```
+
+## Homework questions for group study
+
+1. calculate the sum of all integers numbers between 500 and 600
+
+2. calculate the sum of all the square roots of all integers between 900 and 1000
+
+3. 
+
+```{r,q1}
+
+sum(500:600)
+
+sum(sqrt(900:1000))
+
+a <- c(1,3)
+sqrt(a)
+
+```
+
+
+## Next week we will
+
+Learn:
+
+* how to work with data frames and matrices
+
+* how to read in files properly with R
+
+* how to subsetting and searching
+
+* how to generate some simple graphs like scatterplots, histograms
+
+
+
+## Session information
+
+For reproducibility.
+
+```{r,sessioninfo}
+
+sessionInfo()
+
+```
