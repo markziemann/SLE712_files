@@ -1,0 +1,619 @@
+---
+title: "Bioinformatics prac 2: Working with data tables"
+author: "Mark Ziemann"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+theme: cosmo
+---
+
+Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac2.Rmd
+
+## Introduction
+
+In this session we will be building directly on top of what we learned last session.
+Last session we introduced simple data structures in R, which are individual numbers, integers, strings, and vectors of these.
+In this session we will be working with data tables, which are the most common type of data you will be using.
+The purpose of this session will be to become so familiar with R data tables, that you will no longer need to use spreadsheets in your research.
+The benefit of using R over excel are many:
+
+1. The code is totally reproducible. 
+
+2. The code documents each and every step that you have done.
+
+3. Errors can be picked up more easily in code than in large spreadsheets.
+
+4. Reanalysis is quicker.
+
+5. We can use the source control to manage different versions of the analysis (more on this next week).
+
+6. R has many more functions than Excel.
+
+## Data table types
+
+When I say data table, I mean R objects that have two dimensions, similar to rows and columns in a spreadsheet. 
+There are two main types of R data table objects, matrix and data frame.
+These are distinct objects in that matrices are limited to numerical values while data frames are more flexible.
+The columns of the data frame can have different types of data like numerical, factor, string, etc.
+Because of these differences, some commands that work for matrices might not work for data frames, so it is important to know how to find this information out.
+
+In the below example we look at `freeny.x` which is a matrix, and `mtcars` which is a data frame.
+Again, using the `str()` command will tell us the structure of the data.
+
+```{r,datatables1}
+
+head(freeny.x)
+str(freeny.x)
+
+head(mtcars)
+str(mtcars)
+
+```
+
+As an example of commands that can be used for matrices and not data frames, try `mean()` for `freeny.x` and `mtcars`.
+
+## Basic commands that can be used for data frames and matrices
+
+Find out the number of rows, columns, and simple operations on those rows and columns.
+
+```{r,datatables_commands}
+
+# number of columns
+ncol(mtcars)
+
+# number of rows
+nrow(mtcars)
+
+# dimensions
+dim(mtcars)
+
+# analysing rows and columns
+colMeans(freeny.x)
+colSums(freeny.x)
+rowMeans(freeny.x)
+rowSums(freeny.x)
+
+```
+
+
+You can also transpose a matrix or data frame.
+But be careful, transposing a data frame will automatically convert it to a matrix which could cause downstream errors.
+
+```{r,transpose1}
+
+freeny_flip <- t(freeny.x)
+head(freeny_flip)
+
+mtcars_flip <- t(mtcars)
+head(mtcars_flip)
+str(mtcars_flip)
+
+mtcars_flip <- as.data.frame(mtcars_flip)
+str(mtcars_flip)
+
+```
+
+## Subsetting a data frame
+
+One of the most common tasks in data analysis is to perform filtering.
+Last prac, we found out how to do this with vectors using the square bracket notation. Eg:`x[3]` will retrieve the 3rd element of `x`.
+Square brackets can also be used for two dimensional objects, but we need to provide two indexes.
+The syntax is `df[rows,cols]`.
+
+```{r,datatables2}
+
+# get rows 1-10 of column 2
+freeny.x[1:10,2]
+
+# get rows 1-6 of columns 1-3
+freeny.x[1:6,1:3]
+
+# get rows 1-6 of all columns
+freeny.x[1:6,]
+
+# get all rows for columns 1 and 2 
+freeny.x[,1:2]
+
+```
+
+Now we need to see what happens when we subset just one column or row.
+You can see the default behaviour is to convert the data from matrix format to a vector.
+We can modify this using drop=FALSE to keep it in matrix format.
+
+```{r,datatables3}
+
+# get all rows of column 1
+freeny.x[,1]
+
+# to prevent conversion to vector, use drop=FALSE
+freeny.x[,1,drop=FALSE]
+
+# the same concept for rows
+freeny.x[1,]
+
+# the same concept for rows
+freeny.x[1,,drop=FALSE]
+
+```
+
+Square brackets also works for data frames.
+
+```{r,datatables4}
+
+mtcars[1:10,1:6]
+
+mtcars[,1]
+
+mtcars[,1,drop=FALSE]
+
+```
+
+Data frames also have more options around subsetting columns.
+For example we can subset based on the name of the column or row.
+
+```{r,datatables5}
+
+mtcars[,"cyl"]
+
+mtcars[,c("mpg","wt")]
+
+mtcars["Camaro Z28",c("mpg","wt")]
+
+```
+
+Data frames columns can also be subsetted using the `$` notation.
+The syntax is `df$col`.
+
+```{r,datatables6}
+
+mtcars$mpg
+
+```
+
+This type of notation can even be used to create new columns.
+In this example below, we are converting the miles per gallon value to liters per 100km unit.
+We are also rounding this value to three significant figures.
+
+```{r,datatables7}
+
+mtcars$lper100km <- 235.215 / mtcars$mpg
+
+mtcars[,c(1,ncol(mtcars))]
+
+mtcars$lper100km <- signif(235.215 / mtcars$mpg ,3)
+
+mtcars[,c(1,ncol(mtcars))]
+
+```
+
+
+You may also want to subset a data frame based on the values.
+Let's say you want a car with fuel consumption less than 10 L/100km.
+Let's do it the hard way first.
+
+```{r, subsetting1}
+
+mtcars$lper100km 
+mtcars$lper100km < 10
+which(mtcars$lper100km < 10)
+mtcars[which(mtcars$lper100km < 10),]
+
+```
+
+You can see that this is quite complicated.
+There is an easier way using `subset()`.
+Subset is also perfect for filtering based on more than one criteria using the `&` and '|' operators.
+
+```{r, subsetting2}
+mtcars
+subset(mtcars,lper100km < 10)
+
+# you want an economical AND quick car
+subset(mtcars,lper100km < 10 & qsec < 18)
+
+# you want an economical OR quick car
+subset(mtcars,lper100km < 10 | qsec < 18)
+
+```
+
+Subset also works for strings and factors.
+To look at this we need to look at the `iris` dataset
+
+```{r, subsetting3}
+
+head(iris)
+str(iris)
+
+setosa <- subset(iris,Species == "setosa")
+head(setosa)
+
+```
+
+## Row and columns names
+
+You can use the `colnames` and `rownames` to get the row or column names and even mofidy them.
+
+```{r,rowcolnames1}
+
+colnames(mtcars)
+
+rownames(mtcars)
+
+colnames(mtcars) <- c("miles per gallon",
+              "number of cylinders",
+              "displacement in cubic inches",
+              "gross horsepower",
+              "rear axle ratio",
+              "weight (pounds/1000)",
+              "quarter mile time in seconds",
+              "V or straight cylinder configuration",
+              "transmission type: auto (0) or manual (1)",
+              "number of forward gears",
+              "number of carburetors",
+              "litres per 100km")
+
+head(mtcars)
+
+colnames(mtcars)[1] <- "miles per US gallon"
+
+head(mtcars)
+
+```
+
+If you have a whitespace in the column or row name, it might cause problems later on with subsetting. 
+In that case the column name needs to be wrapped in backticks like this.
+
+```{r, subsetting4}
+
+economical_cars <- subset(mtcars,`litres per 100km` < 10)
+
+economical_cars
+
+```
+
+It is also useful to be able to subset a data frame based on the row names.
+Let's get all the Mercedes models.
+To do this, we need to introduce the `grep()` command which matches strings.
+
+```{r,rowcolnames2}
+
+# let's look again at the car names
+rownames(mtcars)
+
+# lets filter all the ones with "Merc in the name"
+grep("Merc",rownames(mtcars))
+
+# now lets extract out all those rows
+mercs <- mtcars[grep("Merc",rownames(mtcars)),]
+
+mercs
+
+```
+
+## Sorting data tables
+
+We are going to sort our subset of economical cars by their speed based on their quarter mile time.
+To do this, we need to use the `order()` command together with the square brackets.
+`order()` only returns the index of the values, it doesn't actually do the sorting.
+Note that `order()` default behaviour is to bring the smaller values to the top.
+That can be reversed by putting a `-` before the vector being ordered.
+
+```{r,sorting1}
+
+economical_cars
+
+order(economical_cars$`quarter mile time in seconds`)
+
+sorted <- economical_cars[order(economical_cars$`quarter mile time in seconds`),]
+
+sorted[,c(7,ncol(sorted))]
+
+reverse_sorted <- economical_cars[order(-economical_cars$`quarter mile time in seconds`),]
+
+reverse_sorted[,c(7,ncol(reverse_sorted))]
+
+```
+
+## Creating data frames and matrices
+
+First we will create a data frame for some people who completed a survey about their height and weight.
+You should always run `str()` to check that the resulting dataframe has the intended structure.
+You may need to include `stringsAsFactors=FALSE` to protect character strings being converted to factors.
+
+```{r,create_df1}
+
+pnames <- c("Jill", "Matt", "Sam", "Amy", "Bob", "Raj")
+
+pnames
+
+pgender <- as.factor(c("F", "M", "F", "F", "M", "M"))
+
+pgender
+
+pheight <- c(164, 186, 170, 175, 178, 191)
+
+pheight
+
+pweight <- c(54.1, 90.3, 64.8, 66.7, 80.4, 86.9)
+
+pweight
+
+df <- data.frame(pnames,pgender,pheight,pweight)
+
+str(df)
+
+df <- data.frame(pnames,pgender,pheight,pweight,stringsAsFactors = FALSE)
+
+str(df)
+
+df
+
+```
+
+Now we might want to make the row names the name of the person.
+This makes the data tidier, but it won't work if there are more then one entry with the same name.
+You can use the `NULL` to delete columns.
+Deleting rows can be done with square brackets.
+
+```{r,create_df2}
+
+rownames(df) <- df$pnames
+
+df
+
+df$pnames=NULL
+
+df
+
+# delete row 2 and 4
+df <- df[-c(2,4),]
+
+```
+
+Now we will convert df into a matrix.
+
+```{r,create_mat1}
+
+as.matrix(df)
+
+df$pgender <- as.numeric(df$pgender)
+
+mymat <- as.matrix(df)
+
+mymat
+str(mymat)
+
+```
+
+We can also convert other types of data into a matrix.
+To demonstrate this, I'll create some random data with `rnorm` and convert it into a matrix.
+
+```{r,create_mat2}
+
+mydata <- rnorm(n = 100, mean = 10, sd = 20)
+
+mymatrix <- matrix(data = mydata, nrow = 20, ncol = 5)
+
+mymatrix
+
+```
+
+## Creating charts from data frame and matrix objects
+
+Making charts from data frames and matrix objects is really similar to what we did last week.
+Here are some examples.
+
+```{r,plots1,fig.height=8,fig.width=8}
+
+# histogram of cylinders
+data(mtcars)
+hist(mtcars$cyl,xlab="number of cylinders", main="number of cylinders in mtcars data")
+
+# boxplot of qsec values for Toyota and Mercedes
+toyota <- mtcars[grep("Toyota",rownames(mtcars)),]
+merc <- mtcars[grep("Merc",rownames(mtcars)),]
+boxplot(toyota$qsec, merc$qsec,
+        ylab="quarter mile time in seconds",
+        main="mtcars",
+        names = c("Toyota","Mercedes"))
+
+# scatterplot of petal length vs sepal length for setosa irises
+# include a trend line using the lm function
+setosa <- subset(iris,Species=="setosa")
+head(setosa)
+mylm <- lm(setosa$Sepal.Length ~ setosa$Petal.Length)
+plot(setosa$Petal.Length,setosa$Sepal.Length, 
+     xlab="Petal length (cm)",
+     ylab="Sepal length (cm)",
+     main="Setosa petal and sepal length",
+     pch=19)
+abline(mylm,col="red",lwd=2,lty=2)
+
+# a pairs plot is a special type of scatterplot
+pairs(mymatrix)
+
+# lets make a line diagram of freeny revenues
+# first need to normalise each column to the initial value
+head(freeny.x)
+freeny_norm <-t( t(freeny.x) / freeny.x[1,] )
+head(freeny_norm)
+plot(freeny_norm[,1], type="b", ylim=c(0.9,1.12), col="blue",
+     xlab="Quarters beginning 1962 Q2",
+     ylab="Change in values overtime")
+  lines(freeny_norm[,2], type="b", col="red")
+  lines(freeny_norm[,3], type="b", col="black")
+  lines(freeny_norm[,4], type="b", col="darkgreen")
+  legend("topleft", legend = colnames(freeny.x), lty=1 , col = c("blue","red", "black", "darkgreen"))
+  
+```
+
+
+In R, sometimes we need to load a particular package in order to make a special type of chart.
+In the example below we are making a heatmap, where the colour indicates the numerical value.
+
+```{r,heatmaps,fig.height=8,fig.width=8  }
+
+library("gplots")
+heatmap.2(mymatrix,trace="none",scale="none",main="heatmap")
+heatmap.2(cor(mymatrix),trace="none",scale="none", main="correlation")
+
+```
+
+This is also a good time to let you know that you can save R charts as files.
+There are different types of file formats, but PNG and PDF are the most used types.
+You will see these new files appear in your files menu.
+
+```{r,output_plots}
+
+pdf("myplot.pdf")
+plot(1:10)
+dev.off()
+
+png("myplot.png")
+plot(1:10)
+dev.off()
+
+```
+
+## Check your understanding so far
+
+Answer the questions which use concepts from this week and previous sessions.
+
+1. Create a scatterplot of mtcars weight (x axis) versus mpg (y axis). 
+Include x and y axis labels and a main heading.
+
+2. Sort mtcars by weight (wt) and create a horizontal barplot of wt values so heaviest ones at shown at the top of the bar plot.
+The plot should be labeled so it is clear to see which bar belong to which car.
+Include an axis label and main title.
+
+3. Create a box plot of iris petal lengths.
+Each species should be a different category.
+Chart needs axis labels and a main title.
+
+We will discuss your solutions next week.
+
+## Reading in data files
+
+So far we have been working with datasets that are built into R, but in the real world you will be working with data files.
+These could be in different formats like text (.txt), comma separated values (.csv), tab separated values (.tsv) and perhaps Excel files too (.xls and .xlsx).
+
+We will be working with TSV file of pipetting measurements. URL: https://raw.githubusercontent.com/markziemann/SLE712_files/master/pipette_test.tsv
+
+We will use the `read.table()` command and show you some really important options.
+
+```{r,tsv}
+
+URL="https://raw.githubusercontent.com/markziemann/SLE712_files/master/pipette_test.tsv"
+
+# look closely at the structure of pip
+# can you see what is wrong?
+pip <- read.table(URL)
+pip
+str(pip)
+
+# try again
+pip <- read.table(URL,stringsAsFactors = FALSE)
+pip
+str(pip)
+
+# try again
+# looking better
+pip <- read.table(URL,stringsAsFactors = FALSE, header=TRUE)
+pip
+str(pip)
+
+# got it now
+pip <- read.table(URL,stringsAsFactors = FALSE, header=TRUE, row.names=1)
+pip
+str(pip)
+
+```
+
+Now let's try a csv file containing some travel records.
+
+```{r,readcsv}
+
+URL="https://people.sc.fsu.edu/~jburkardt/data/csv/airtravel.csv"
+
+trav <- read.table(URL,sep=",")
+trav
+str(trav)
+
+trav <- read.table(URL,sep=",",header=TRUE)
+trav
+str(trav)
+
+trav <- read.csv(URL)
+trav
+str(trav)
+
+```
+
+Now let's try a Microsoft Excel file.
+
+```{r,readxl}
+
+URL="https://github.com/file-examples-com/uploads/blob/master/2017/02/file_example_XLS_10.xls?raw=true"
+NAME="file_example_XLS_10.xls"
+download.file(URL,destfile=NAME)
+library("readxl")
+
+mydata <- read_xls(NAME)
+mydata
+str(mydata)
+
+```
+
+## Save and load session and single datasets
+
+When working in R, it is convenient to save the session with `save.image()`. 
+This results in an Rdata file which contains all the data objects in your current environment.
+To test that it's actually working, clear your environment with the sweep/broom icon and then load the Rdata file with `load()`.
+
+```{r,save1}
+
+save.image("mysession.Rdata")
+
+rm(list=ls())
+
+load("mysession.Rdata")
+
+```
+
+That is really cool, but sometimes we want to save individual objects, such as a large dataframe as Rdata files.
+
+```{r,save2}
+
+saveRDS(object = mymatrix , file = "mymatrix.Rds")
+
+rm(list=ls())
+
+x <- readRDS("mymatrix.Rds")
+
+head(x)
+
+```
+
+## Check your skills
+
+For the TSV file located here: https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part1_files/mydata.tsv do the following:
+
+1. Read it in and show the first 6 rows of data. 
+
+2. Calculate the column and row means.
+
+3. Use the `cor()` command to find the correlation coefficients between the 3 data sets. Which two datasets are the most similar?
+
+4. Make a pairs plot of the three datasets.
+
+
+## Session information
+
+For reproducibility.
+
+```{r,sessioninfo}
+
+sessionInfo()
+
+```
