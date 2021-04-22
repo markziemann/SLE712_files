@@ -144,13 +144,18 @@ I know you are keen to wrap this up, but spare a minute to check that you have s
 2. Your Rmd based report describes the strategy used to solve each of the questions so that someone not familiar with this unit can follow what you are doing.
 
 3. Your Rmd based report directly addressed the question by providing clear answers with code chunks and free text.
+Be sure to answer all parts of the question.
+This may include descriptive, numerical, categorical information as well as tables or charts as required.
 
 4. The code used to generate the report is consistent with what is in the GitHub repository.
 
-5. The codebase used to generate the report contains significant contributions from all group members including multiple commits AND issues.
+5. The code should run without errors. 
+The assessor will be running your code, so make sure it works from start to end and gives the same result as shown in the report.
 
-6. The GitHub repository contains a properly formed README that documents the codebase purpose and contents so that someone not familiar with this unit can understand.
+6. The codebase used to generate the report contains significant contributions from all group members including multiple commits AND issues.
 
-7. Do not commit/push the final version to GitHub as but this goes against the "Evidence of team coding and version control" criterion.
+7. The GitHub repository contains a properly formed README that documents the codebase purpose and contents so that someone not familiar with this unit can understand.
+
+8. Do not commit/push the final version to GitHub as but this goes against the "Evidence of team coding and version control" criterion.
 The purpose of using GitHub is to track the development of the code from early draft through to polished final product.
 Even if you are working alone, you will need to make multiple commits/pushes and raise multiple issues to get full marks for the "Evidence of team coding and version control" criterion.
