@@ -9,7 +9,7 @@ output:
     toc: true
 ---
 
-Source: https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/assessment_task3_writing_guide.md
+Source: https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/assessment_task3_writing_guide.Rmd
 
 Due date: Friday 28th May (week 11)
 
