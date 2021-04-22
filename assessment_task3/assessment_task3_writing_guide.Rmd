@@ -1,0 +1,156 @@
+---
+title: "SLE712 Assignment 3"
+author: "Mark Ziemann"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+    toc: true
+---
+
+Source: https://github.com/markziemann/SLE712_files/blob/master/assessment_task3/assessment_task3_writing_guide.md
+
+Due date: Friday 28th May (week 11)
+
+## General guidelines
+
+This assignment consists of two bioinformatics exercises and counts toward 20% of the unit mark.
+You may work individually or in groups of two or three, so long as there is evidence of contribution to the code repository by all members.
+
+**Your submission will consist of:**
+
+* **one Rmarkdown report AND**
+
+* **one GitHub repository.**
+
+The report will be submitted as **one PDF document** to the CloudDeakin dropbox.
+If you used more than one Rmd to generate the results, then use a PDF merging tool to stick them together into 1 PDF.
+Within the report, you must state the link to the GitHub repository.
+I recommend you keep your repository private while you are preparing your assessment, but in order for it to be assessed, the GitHub repository must be made publicly visible on Saturday 29th May.
+If you are working in groups, then this needs to be stated in the report.
+All individuals in the group should submit the PDF to the dropbox.
+There is no word limit, but the report may not be longer than 20 pages. 
+If you describe ideas and works that are not your own, you must reference your sources with in-text citations and a list of references according to the Harvard style: https://www.deakin.edu.au/students/studying/study-support/referencing/harvard 
+
+Any further questions please contact me by discussion board or email: m.ziemann{at}deakin.edu.au 
+
+## Breakdown of marks
+
+A breakdown of the marks is provided:
+
+Section | Criteria | Marks given 
+--|--|--
+Part 1 | Code works (2 marks per qn) | 20
+Part 1 | Code documentation (README and comments) | 10
+Part 1 | Evidence of team coding (source control) | 10
+Part 1 | Written answers (1 mark per qn) | 10
+Part 2 | Code works for points 1 - 4; 2 marks each | 8
+Part 2 | Code works for points 5 - 6; 6 marks each | 12
+Part 2 | Code documentation (README and comments) | 10
+Part 2 | Evidence of team coding (source control) | 10
+Part 2 | Written answers for points 1-4; 1 mark each | 4
+Part 2 | Written answers for points 5-6; 3 marks each | 6
+
+## Rubric
+
+Criteria | Full mark | Half mark | No mark
+-- | -- | -- | --
+Code works | The code provided on Github executes without errors and generates the correct answer | The code provided on GitHub has a slight mistake which gives an incorrect answer but there is evidence that student has used the learning materials and made an attempt | The code yields an error or there is a major mistake, or no GitHub repository was provide
+Code Documentation | The repository has a detailed README that accurately describes the contents. The code contains enough comments to describe what each chunk of code is doing | There is a README and some comments but they are not detailed enough or contain inaccurate information | There was no attempt to document the repository
+Evidence of team coding and version control | All group members made numerous contributions including code, issues and documentation versioning | Each member made one contribution to the repository | Only one commit was made, or no repo was provided
+Written answers | Written answers provided in  the submitted report address the question accurately and is consistent with code provided. Student provided a clear description of how the problem was solved. | The question was answered accurately but the method used to solve the problem was not given. Minor inconsistencies between answer and code. Minor grammar or spelling errors. | Student response did not answer the question or there are major inconsistencies between code and answer. Major grammatical and spelling errors.
+
+## Part 1 - Importing files, data wrangling, plots and saving code on GitHub
+
+### Part 1 Overview
+
+The purpose of this exercise will be for you to develop skills in problem solving, R coding, work together as a team using Rstudio and GitHub.
+You will be provided with two data files to work with: "gene_expression2.tsv" and "growth_data2.csv" which are available from this URL*: https://github.com/markziemann/SLE712_files/tree/master/bioinfo_asst3_part1_files
+TIP: To download a file with R, click on “view raw” and then you can copy the URL from the address bar and then use the download.file command in R.
+It is compulsory that you use the Rmarkdown function in Rstudio to create an Rmd based  report. In the Rmd file you should complete the following tasks.
+
+### Part 1 Specific tasks
+
+1. Download the file “gene_expression2.tsv” which contains RNA-seq count data for two samples of interest. Read in the file, making the gene accession numbers the row names. Show a table of values for the first six genes.
+
+2. Make a new column which is the mean of the other columns. Show a table of values for the first six genes.
+
+3. List the 10 genes with the highest mean expression.
+
+4. Determine the number of genes with a mean <10.
+
+5. Make a histogram plot of the mean values in png format and paste it into your report.
+
+The file “growth_data2.csv” contains measurements for tree circumference growing at two sites, control site and treatment site which were planted 20 years ago.
+
+6. Import this csv file into an R object. What are the column names?
+
+7. Calculate the mean and standard deviation of tree circumference at the start and end of the study at both sites.
+
+8. Make a box plot of tree circumference at the start and end of the study at both sites. 
+
+9. Calculate the mean growth over the past 10 years at each site. 
+
+10. Use the `t.test` and `wilcox.test` functions to estimate the p-value that the 10 year growth is different at the two sites.
+
+## Part 2: Determine the limits of BLAST
+
+### Part 2 overview
+
+In this exercise we will be testing your ability to undertake more advanced analysis in R.
+In class you will be shown how to:
+
+* Download and unzip files
+
+* Perform simple manipulations and analyses with sequence data
+
+* Use a provided function to incorporate point mutations into a sequence
+
+* Use provided functions to perform a BLAST search and interpret results
+
+In this task we will be testing your ability to use supplied functions to perform an analysis into the limits of BLAST.
+Your group will select one E. coli gene sequence found in the file: https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part2_files/sample.fa
+Each group selects just 1 sequence.
+Next, you will need the whole set of E. coli genes can be downloaded from this link: ftp://ftp.ensemblgenomes.org/pub/bacteria/release-42/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655/cds/Escherichia_coli_str_k_12_substr_mg1655.ASM584v2.cds.all.fa.gz 
+
+### Part 2 specific tasks
+
+1. Download the whole set of E. coli gene DNA sequences and use gunzip to decompress.
+Use the `makeblast()` function to create a BLAST database.
+How many sequences are present in the E.coli set?
+
+2. Download the sample fasta sequences and read them in as above.
+For your selected sequence, determine the length (in bp) and the proportion of GC bases.
+
+3. You will be provided with R functions to create BLAST databases and perform BLAST searches.
+Use BLAST to identify what E. coli gene your sequence matches best.
+Show a table of the top 3 hits including percent identity, E-value and bit scores.
+
+4. You will be provided with a function that enables you to make a set number of point mutations to your sequence of interest. Run the function and write an R code to check the number of mismatches between the original and mutated sequence.
+
+5. Using the provided functions for mutating and BLASTing a sequence, determine the number and proportion of sites that need to be altered to prevent the BLAST search from matching the gene of origin.
+Because the mutation is random, you may need to run this test multiple times to get a reliable answer.
+
+6. Provide a chart that shows how the increasing proportion of mutated bases reduces the ability for BLAST to match the gene of origin.
+Write a conclusion that summarises the results in 1 to 2 sentences.
+
+## Assignment checklist
+
+I know you are keen to wrap this up, but spare a minute to check that you have satisfied the following:
+
+1. Your Rmd based report has your group member names and student IDs, the link to the corresponding GitHub repo and is less than 20 pages.
+
+2. Your Rmd based report describes the strategy used to solve each of the questions so that someone not familiar with this unit can follow what you are doing.
+
+3. Your Rmd based report directly addressed the question by providing clear answers with code chunks and free text.
+
+4. The code used to generate the report is consistent with what is in the GitHub repository.
+
+5. The codebase used to generate the report contains significant contributions from all group members including multiple commits AND issues.
+
+6. The GitHub repository contains a properly formed README that documents the codebase purpose and contents so that someone not familiar with this unit can understand.
+
+7. Do not commit/push the final version to GitHub as but this goes against the "Evidence of team coding and version control" criterion.
+The purpose of using GitHub is to track the development of the code from early draft through to polished final product.
+Even if you are working alone, you will need to make multiple commits/pushes and raise multiple issues to get full marks for the "Evidence of team coding and version control" criterion.
