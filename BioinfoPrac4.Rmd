@@ -1,0 +1,480 @@
+---
+title: "Prac 4: Getting advanced with R using functions, conditionals, loops and vectorisation"
+author: "Mark Ziemann"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+theme: cosmo
+---
+
+Source: https://github.com/markziemann/SLE712_files/BioinfoPrac4.Rmd
+
+# Introduction
+
+In this lesson we'll be taking your R skills to the next level with functions, conditionals, loops and vectorisation.
+
+# Functions
+
+A function is a stored command which can be rerun with different inputs.
+We define the function using the `function()` command where the function itself is defined in the `{}` curly brackets as shown below.
+Unlinke this example, functions are normally more than one line.
+Your function can specify more than one input but has to return just one output.
+`return` is used to select what data should be returned to the user.
+
+```{r,func1}
+
+cubed <- function(x) {
+    x^3
+}
+
+cubed(42)
+cubed(c(1,2,4))
+
+```
+
+So you can consider functions to be "shortcuts", to help you execute custom codes that you will be reusing again and again.
+
+Functions are a bit like lego blocks in that they are versatile. 
+For example you can use functions inside other functions.
+
+```{r,func2}
+
+cubedsum <- function(x,y) {
+    z <- cubed(x) + cubed(y)
+    return(z)
+}
+
+cubedsum(3,4)
+
+```
+
+Using this approach, you can make incredibly sophisticated programs out of relatively simple building blocks.
+
+The inputs don't need to be single numbers, they can be vectors or dataframes.
+In this example we perform analysis of 
+
+```{r,func3}
+
+str(cars)
+mylm <- lm(cars[,2] ~ cars[,1])
+
+INT=signif(mylm$coefficients[1],3)
+INT
+SLOPE=signif(mylm$coefficients[2],3)
+SLOPE
+HEADER=paste("Slope:",SLOPE,"Int:",INT)
+HEADER
+
+myfunc <- function(x,y) {
+  mylm <- lm(y ~ x)
+  INT=signif(mylm$coefficients[1],3)
+  SLOPE=signif(mylm$coefficients[2],3)
+  HEADER=paste("Slope:",SLOPE,"Int:",INT)
+  plot(x,y)
+  abline(mylm,lty=2,lwd=2,col="red")
+  mtext(HEADER)
+}
+myfunc(cars[,1],cars[,2])
+
+```
+
+Let's try to make our own functions with the next 30 mins.
+Make a function that accepts 2 numerical vectors and does the following:
+
+* Student t-test with the syntax `t.test(vec2,vec1)`. 
+
+* Make a boxplot of the two groups with a subheading that contains the t.test pvalue using the `mtext()` command.
+
+In order to generate two numeric vectors you can use the following.
+
+```{r,func4}
+
+vec1 <- rnorm(n=10,mean=20,sd=10)
+
+vec2 <- rnorm(n=10,mean=30,sd=15)
+
+```
+
+# Conditionals
+
+Commonly, your workflow will need to adapt to different inputs.
+For example if a file already exists, you may not want to over-write it.
+This is the general format of an `if` statement in R:
+
+```{r,eval=FALSE}
+
+if (condition) {command to run if TRUE} 
+
+```
+
+Most of the time the command to run is written on a new line.
+Many times we need to run more than one command.
+
+```{r,eval=FALSE}
+
+if (condition) {
+    command1 to run if TRUE
+    command2 to run if TRUE
+} 
+
+```
+
+If we only want to execute the command if FALSE, then we can add `!` to toggle the conditional.
+
+```{r}
+
+2>3
+
+!2>3
+
+```
+
+Here is how it looks in an actual `if` statement.
+Note the beow is only an example, the code won't work when run because command1 and command2 are not defined.
+
+```{r,eval=FALSE}
+
+if (!condition) {
+    command1 to run if FALSE
+    command2 to run if FALSE
+} 
+
+```
+
+We can add `else` to select from two options
+
+```{r,eval=FALSE}
+
+if (condition) {
+    command1 to run if TRUE
+} else {
+    command2 to run if FALSE
+}
+
+```
+
+Here is a real life example.
+
+```{r,cond1}
+
+if (!file.exists("mtcars.tsv")) {
+  write.table(mtcars,file="mtcars.tsv",quote=FALSE,sep="\t")
+  message("File written")
+}
+
+```
+
+Here is another better way to do it.
+
+```{r,cond2}
+
+if (file.exists("mtcars.tsv")) {
+  warning("File already exists!")
+} else {
+  write.table(mtcars,file="mtcars.tsv",quote=FALSE,sep="\t")
+  message("File written")
+}
+
+# delete the file
+unlink("mtcars.tsv")
+
+```
+
+We can use Boolean operators to come of with more sophisticated conditional.
+For example `&` means AND, while `|` means OR.
+
+```{r,cond3}
+
+# & = AND
+if(3>2 & 5>4) {
+  print("ok")
+}
+
+if(3>2 & 5>10) {
+  print("ok")
+}
+
+# | = OR
+if(3>2 | 5>10) {
+  print("ok")
+}
+
+```
+
+Here is another example.
+Let's check to see when this Rmd was last updated.
+If it was more than a month then it's too old.
+
+```{r,cond4}
+
+# record current time in seconds
+CURRENT_TIME <- as.numeric(Sys.time())
+
+# get the last modified time in seconds
+MOD_TIME <- as.numeric(file.info("BioinfoPrac4.Rmd")$mtime)
+
+# difference in time
+DIFF_TIME <- signif(CURRENT_TIME - MOD_TIME,3)
+
+MY_MESSAGE <- paste("This prac file is",DIFF_TIME,"seconds old") 
+message(MY_MESSAGE)
+
+# Define a month in seconds
+MONTH <- 60*60*24*30
+message(paste("One month is",MONTH,"seconds"))
+
+# now run the comparison
+if (DIFF_TIME > MONTH) {
+  message("This learning material more than 1 month old. Time to update!")
+} else {
+  message("This learning material is less than 1 month old :)")
+}
+  
+```
+
+Now it's your turn.
+Test to see if the mean petal length of setosa, versicolor an virginica are greater than 3cm.
+If this condition is true, print a message including the species name and measurement.
+
+# Loops
+
+In software engineering and data analysis it is common to repeat a task with different inputs. 
+In most computer languages a `for` loop would be used.
+
+This can be done in R as demonstrated below:
+
+```{r,loop1}
+
+for (i in c("a","b","c")) {
+  print(i)
+}
+
+for (i in 1:5) {
+  print(i^2)
+}
+```
+
+While this works in the above example, you'll find that it is difficult to work downstream of the loop. 
+In particular it is difficult to access the results of a looped command and use it in subsequent steps.
+
+In this example we should in theory be able to save the squares into the object `x` but it doesn't work as you might think.
+
+```{r,loop2}
+
+# try storing the results
+x <- for (i in 1:5) {
+  i^2
+}
+
+x
+
+```
+
+There is one way to make it work, but still it isn't recommended.
+
+```{r,loop3}
+
+x <- vector()
+# try another way of storing the results
+for (i in 1:5) {
+  res <- i^2
+  x[i] <- res
+}
+
+x
+
+```
+
+For loops are also really slow and inefficient in R when dealing with big datasets.
+Nevertheless, there is also a `while` loop.
+
+```{r,loop4}
+
+i=0
+while(i<5) {
+    print(i)
+    i=i+1
+}
+
+```
+
+# Vectorisation with sapply and lapply
+
+The preferred solution to repeat a task on many inputs is to use vectorisation.
+Let's say we want to find the median of three matrices.
+We create a new object, either a vector or list and then run a function on each element.
+
+Note below the difference in the output type given by `vapply`, `lapply` and `sapply`.
+
+```{r,apply1}
+
+mx1 <- matrix(rbinom(100,50,0.8),nrow = 5)
+mx2 <- matrix(rbinom(100,100,0.8),nrow = 5)
+mx3 <- matrix(rbinom(100,300,0.8),nrow = 5)
+mxs <- list(mx1,mx2,mx3) 
+str(mxs)
+
+# vapply output is always a vector
+# FUN.VALUE refers to the type of output expected. In this case numerical
+vapply(X = mxs, FUN = mean,FUN.VALUE = 1.0)
+
+# lapply output is always a list
+lapply(X = mxs, FUN = mean)
+
+# sapply output is either a vector or matrix
+sapply(X = mxs, FUN = mean)
+
+```
+Take a few minutes now to visit the help page for these three commands.
+
+`?vapply`
+
+As you can see from the code above, vectorisation leads to shorter and more readable code.
+Naturally, you can use your custom functions with `sapply` and other `apply` family functions.
+
+Here I've created a function to calculate the mean correlation in the columns of a matrix.
+
+```{r,apply2}
+
+meancor <- function(x) {
+    mycor <- cor(x)
+    mean(mycor)
+}
+
+meancor(mx1)
+
+sapply(mxs,meancor)
+
+```
+
+Your turn.
+Use `sapply` to find the number of rows and columns of each matrix (mx1,mx2 and mx3).
+
+# Apply
+
+Sometimes you have a large data table and you want to run the same analysis on each row or column. To do this, use `apply`. The general syntax is:
+
+`apply(x,MARGIN,FUN)`
+
+Where `x` is the object (df or mx) to work on.
+MARGIN is either 1 for rows and 2 for columns.
+FUN is the function to ron on the data.
+
+For example, here is how you can calculate median of rows or columns in a matrix or dataframe.
+
+```{r,apply3}
+
+# row medians
+apply(mx1,1,median)
+
+# column medians
+apply(mx2,2,median)
+
+```
+
+In this next example I will create a new function that will calculate the coefficient of variation (CV), and then run this for each of the columns in the mtcars data.
+
+```{r,apply4}
+
+cv <- function(x) {
+  mymean <- mean(x)
+  mysd <- sd(x)
+  cv <- mysd/mymean
+  signif(cv,3)
+}
+
+# run on one vector
+cv(mtcars$mpg)
+
+# now run on all columns in the df
+apply(X = mtcars, MARGIN = 2  ,FUN = cv)
+
+```
+
+Your turn.
+Create a function that reports the difference between the median and mean of a numerical vector, then use this function inside an `apply` command to report interquartile ranges of rows in the mx1 matrix.
+
+# Replicate
+
+This is a special case of sapply which repeats a task a set number of times, which could be useful for simulations (Eg Assessment Task 3). 
+In the example below, we create a function which simulates a coin toss. 
+Tails=0 and heads=1.
+Calculate the mean of n=10 tosses. Is the result consistent?
+
+```{r,replicate1}
+
+cointoss<-function(){
+    sample(c(0,1),1,replace=TRUE)
+}
+
+res <- replicate(10,cointoss())
+res
+mean(res)
+
+mean(replicate(10,cointoss()))
+mean(replicate(100,cointoss()))
+mean(replicate(1000,cointoss()))
+mean(replicate(10000,cointoss()))
+
+```
+
+See how the result converges near 50% as the number of replications increases.
+
+Now you would like to create a chart that shows the absolute difference between the result and 50% as you vary the number of replications from 10 to 1,000 in increments of 10.
+
+
+```{r,replicate2}
+
+# create a vector of numbers from 10 to 1000 in increments of 10
+# we'll use this for the number of replicates
+NUM_REPS <- 1:100*10
+
+# Create a new function that repeats the cointoss function N times
+myreplicate <- function(N) {
+  mean(replicate(N,cointoss()))
+  }
+
+# Now run it using apply
+res <- sapply(X = NUM_REPS, FUN = myreplicate)
+
+# Now process the results and make the chart
+str(res)
+myabs <- abs(0.5-res)
+myabs
+plot(NUM_REPS,myabs, 
+     xlab="number of cointoss replications",
+     ylab="deviation from expected result (0.5)")
+
+```
+
+# Test your understanding - take home questions
+
+### Question 1
+
+Create a function that calculates the cubed root for a number
+
+### Question 2
+
+Use `sapply` to calculate the cubed root for the numbers 44,77,99,123
+
+### Question 3
+
+Use `if` to test whether object `mtcars.tsv` exists and run `head` if it does exist.
+
+### Question 4 
+
+Use `apply` to get the maximum value in each column of mtcars.
+
+### Question 5
+
+Use `replicate` to quantify how frequent it is to draw the same number three times where the pool of numbers consists of 0 to 9.
+
+
+# Session
+
+```{r}
+
+sessionInfo()
+
+```
