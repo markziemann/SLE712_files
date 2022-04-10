@@ -90,6 +90,7 @@ We'll start with some arithmetic.
 sqrt(64)
 
 ```
+
 Notice that as you start typing commands like `sqrt` that Rstudio will give you suggestions, you can use the tab key to autocomplete.
 
 ### Working with variables
@@ -211,6 +212,7 @@ class(E)
 typeof(E)
 
 ```
+
 Note how the names can be added during or after the vector is defined.
 
 ### Factors
@@ -461,7 +463,6 @@ hist(y_vals,main="")
 
 ```
 
-
 ## Homework questions for group study
 
 1. calculate the sum of all integers numbers between 500 and 600
@@ -487,7 +488,7 @@ Learn:
 
 * how to read in files properly with R
 
-* how to subsetting and searching
+* how to filter, subset, search and sort data
 
 * more types of analysis like correlations
 
