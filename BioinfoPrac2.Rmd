@@ -13,9 +13,13 @@ Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac2.Rmd
 ## Introduction
 
 In this session we will be building directly on top of what we learned last session.
-Last session we introduced simple data structures in R, which are individual numbers, integers, strings, and vectors of these.
-In this session we will be working with data tables, which are the most common type of data you will be using.
-The purpose of this session will be to become so familiar with R data tables, that you will no longer need to use spreadsheets in your research.
+Last session we introduced simple data structures in R, which are individual numbers, integers, 
+strings, and vectors of these.
+In this session we will be working with data tables, which are the most common type of data you will
+be using.
+The purpose of this session will be to become so familiar with R data tables, that you will no 
+longer need to use spreadsheets in your research.
+
 The benefit of using R over excel are many:
 
 1. The code is totally reproducible. 
@@ -32,11 +36,14 @@ The benefit of using R over excel are many:
 
 ## Data table types
 
-When I say data table, I mean R objects that have two dimensions, similar to rows and columns in a spreadsheet. 
+When I say data table, I mean R objects that have two dimensions, similar to rows and columns in a 
+spreadsheet. 
 There are two main types of R data table objects, matrix and data frame.
-These are distinct objects in that matrices are limited to numerical values while data frames are more flexible.
+These are distinct objects in that matrices are limited to numerical values while data frames are more
+flexible.
 The columns of the data frame can have different types of data like numerical, factor, string, etc.
-Because of these differences, some commands that work for matrices might not work for data frames, so it is important to know how to find this information out.
+Because of these differences, some commands that work for matrices might not work for data frames, 
+so it is important to know how to find this information out.
 
 In the below example we look at `freeny.x` which is a matrix, and `mtcars` which is a data frame.
 Again, using the `str()` command will tell us the structure of the data.
@@ -554,7 +561,7 @@ Now let's try a Microsoft Excel file.
 
 ```{r,readxl}
 
-URL="https://github.com/file-examples-com/uploads/blob/master/2017/02/file_example_XLS_10.xls?raw=true"
+URL="https://github.com/markziemann/SLE712_files/blob/master/misc/file_example_XLS_10.xls?raw=true"
 NAME="file_example_XLS_10.xls"
 download.file(URL,destfile=NAME)
 library("readxl")
@@ -597,7 +604,7 @@ head(x)
 
 ## Check your skills
 
-For the TSV file located here: https://raw.githubusercontent.com/markziemann/SLE712_files/master/bioinfo_asst3_part1_files/mydata.tsv do the following:
+For the TSV file located here: https://raw.githubusercontent.com/markziemann/SLE712_files/master/misc/mydata.tsv
 
 1. Read it in and show the first 6 rows of data. 
 
