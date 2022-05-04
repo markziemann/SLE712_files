@@ -10,6 +10,9 @@ theme: cosmo
 
 Source: https://github.com/markziemann/SLE712_files/blob/master/BioinfoPrac3.Rmd
 
+Notes: In preparation for this class - please create a new user account at github.com and keep the GitHub username and 
+password handy in class as we will need it.
+
 ## Introduction to Rmarkdown
 
 Previously we have been learning about how to use R to do basic numerical analysis, work with data tables and generate charts.
@@ -107,7 +110,6 @@ Briefly, using markdown you can format text with bold, italics, strikethrough, u
 
 In Rmarkdown, it is good practice to have one sentence per line.
 One important thing to know is that if you want to have a line break (new paragraph), you will need to leave an empty line between sentences, otherwise they will appear in the same paragraph.
-
 
 I've even used Rmarkdown to write essays for my own assessments in the units that I'm enrolled in.
 These PDFs that you are downloading from the unit site were also completely written in Rmarkdown.
@@ -222,9 +224,43 @@ In order to learn a bit more about repositories, why don't you explore the SLE71
 This repository is where I like to manage the bioinformatics related content for this unit.
 Click on the commit history to see how the repository has changed over time.
 
-### Step 0: tell Rstudio/git who you are
+### Step 0: Create an SSH key
+
+Recently, GitHub has deprecated the use of user passwords as they are relatively less secure than secure shell (SSH) keys.
+
+So we need to run a Linux shell command to create one.
+
+In the bottom left panel, locate and click the "Terminal" tab and enter in the following:
+
+`ssh-keygen`
+
+Follow the default options to create the SSH key. Don't use a password for your SSH key.
+
+### Step 1: Provide the key to GitHub
+
+The SSH key will only work if you provide the public key to GitHub.
+That way when you use the private key, GitHub knows it is you.
+
+Go to github.com and locate and click the user "Settings" menu at the top right of the screen.
+
+![GitHub Settings](images/github_settings.png "settings1")
+
+In there, locate the SSH and GPG key menu.
+
+![SSH and GPG key menu for Github](images/github_settings2.png "settings2")
+
+Once in there, select "Add a new SSH key".
+Paste the public key in the box provided.
+To get the public key, return to the terminal and type:
+
+`cat ~/.ssh/id_rsa.pub`
+
+Select and copy the text (approx 380 characters in length), then paste it in the browser text box.
+
+### Step 2 tell Rstudio/git who you are
 
 In order to get git working with Rstudio, we need to tell git who you are.
+
 In the bottom left panel, click the "Terminal" tab and enter in the following commands, substituting your own Github alias and email.
 
 ```
@@ -232,7 +268,7 @@ git config --global user.name "John Doe"
 git config --global user.email johndoe@example.com
 ```
 
-### Step 1: Start a new repository for your Rmd
+### Step 3: Start a new repository 
 
 Source [(Jenny Bryan 2020)](https://github.com/jennybc/happy-git-with-r).
 
@@ -254,6 +290,8 @@ Here's how to fill this in:
 
 * Initialize this repository with a README: Yes.
 
+* Licence: MIT or GPLv2 are good licences.
+
 * For everything else, just accept the default.
 
 Then click the big green button "Create repository".
@@ -263,7 +301,7 @@ You will see a new screen, Click on the green “Clone or Download” button and
 
 ![new github repo2](images/image10.png "screenshot2")
 
-### Step 2: Start a new repository for your Rmd
+### Step 4: Connect your repository to Rstudio
 
 The next step is to connect your Rstudio to the GitHub repo.
 
@@ -275,7 +313,7 @@ You will be prompted for the Repository URL, which you copied earlier from GitHu
 Paste it in.
 You have the option of changing the directory name, but it is a good idea to keep it as-is.
 You may also select to create the project as a subdirectory of another directory; in this case called “projects” located in the home directory (~). 
-Click Create Project then you will be returned to the normal Rstudio view. 
+Click "Create Project" then you will be returned to the normal Rstudio view. 
 
 You will see that the Files panel contains three files .gitignore, an.Rproj and README.md. 
 The .gitignore file contains a list of file types that should be ignored and not included in the repo.
@@ -283,9 +321,65 @@ The Rprog file is a configuration file for Rstudio and should not be included in
 The README is for documentation and should be modified to suite your project and added to version control.
 We will discuss the importance of a good README a little bit later.
 
-### Step 3: Make changes to the Git repo in Rstudio
+### Step 5: Force git to use the SSH key
 
-To demonstrate the process of contributing to a repo, we will begin by copying an Rmd from the "Test your skills" section of this document script above. 
+If we were to make changes to the repo now, git will try to use password authentication which won't work with github.com.
+So we need to force the use of the SSH key we made earlier.
+
+Go back to the terminal and type:
+
+`git remote set-url origin git@github.com:<yourusername>/<yourreponame>.git`
+
+Replace `yourusername` with your username on GitHub. Replace `yourreponame` with the name of your repository.
+
+### Step 6: Make changes to the git repo in Rstudio
+
+Locate that file in the "files" panel, double-click to open it up and add some text:
+
+`this repo is a demonstration of how to use git with Rstudio`
+
+Press the save button.
+
+We now want to propagate these changes to the internet version, which involved the following steps:
+
+1. Add - begin tracking changes
+
+2. Commit - make a change to a local repository (on Rstudio)
+
+3. Push - make a change to the public version (on github.com)
+
+Start by locating the git panel in the upper right hand corner of the window.
+
+"Add" is a bit like activating track changes on a word doc.
+Git will be aware that this file needs to be tracked.
+
+You may see that the README.md file looks a bit different as we have modified it, there will be an "M" next to the file.
+Here is an example:
+
+![git add](images/git_add.png "git_add")
+
+Click the "Staged" box next to the file you want to add.
+
+Then click on the "Commit" button, which will bring up a pop-up window which will highlight the changes made.
+Deleted lines of text are shown in red, while new lines are shown in green.
+
+Now you need to provide a commit message, which is a way for you to describe why the modifications were made.
+This is mandatory, so you need to include something, even if it is just "bugfix" or "first commit".
+Then hit the "Push" button.
+
+![git add](images/git_commit.png "git_commit")
+
+The "Push" command will then attempt to communicate the local changes to the version on GitHub.
+If the SSH key is being used for the first time, git might ask for final confirmation that you want to initiate the new SSH connection.
+In that case, type "Yes".
+
+To prove that this has worked, you can visit the repo address on github.com and the new modifications should be visible.
+
+Hopefully this process works for you but if there is a problem, we'll diagnose in class.
+
+### Step 7: add some more files
+
+Now you will try this process out yourself by adding the two Rmds you made before and pushing these to Github.
 
 In the Files panel, locate the "plantgrowth.Rmd" and "cars.Rmd" you made. 
 It will most likely be in your home directory.
@@ -297,20 +391,31 @@ Here is a screenshot to help you find the "Copy to" button:
 Before including these two files in the new GitHub repo it is a good idea to "knit" them, which will check that the document as a whole is free of errors and generates the desired output.
 If there are errors, fix them and repeat the knit process until all errors are resolved.
 
-Then, in the upper right panel, click the "Git" tab and you should see "plantgrowth.Rmd" and "cars.Rmd" in the list of files.
-Click the boxes beside these files marked "staged". 
-This will mark these files to be included in the repository.
-Next, click the "Commit" button in the Git tab.
-This will open a pop-up.
-Type in a commit message which is related to the motivation for the change in the repo.
-An example could be "added new Rmd files for class activity"
-Once you have commited the files, these changes will be finalised for the "local" repo, but won't change the "remote".
-To change the remote repo, you will need to click the "push" button.
-In order for these changes to be made, you will need to enter your username and password.
+Then, use the "Add", "Commit" and "Push" instructions above to make changes to the remote.
 
-If everything goes according to plan, then when you visit your repo at github.com you will see that the changes have taken effect.
+### Step 8: get started with team coding
 
-### Step 4: Writing a good README
+While some smaller projects are done solo, the trend nowadays is for important research software projects to involve many contributors.
+For your assignment, you will need to create a new repository and add your partner as a collaborator.
+That way you will both have access to push changes to the repo on the main branch.
+Follow the three arrows in the image below to invite a collaborator.
+You will need their Github alias or email address to identify them.
+
+![new github repo5](images/image1.png "screenshot5")
+
+Once invited, the invitee will need to check their email and confirm the invite.
+Once confirmed, they will have the ability to push changes.
+
+*A word of warning*: you will need to sync your local repo with remote everytime you begin working on the code, because your collaborators might have made recent changes that you do not have.
+To do this, you will need to run a git "Pull".
+
+![Git pull](images/image3.png "screenshot6")
+
+If you don't pull, then you will get errors when you want to finally push your work.
+There will be merge conflicts and a lot of frustration, so please always pull when you work on a project at the start of the day.
+You will also need to run a pull if anyone has made modification to the remote repo if they have used the GitHub.com webpage to make changes.
+
+### Step 9: Writing a good README
 
 In this next part, you will create a descriptive README file.
 The README is the documentation that users will read first.
@@ -334,29 +439,7 @@ Before you write your own README, take a look at some popular templates [here](h
 Your job now is to write a brief README for your new GitHub repo.
 You should do this within Rstudio, then stage, commit and push the changes as you did before.
 
-### Step 5: get started with team coding
-
-While some smaller projects are done solo, the trend nowadays is for impportant research software projects to involve many contributors.
-For your assignment, you will need to create a new repository and add your partner as a collaborator.
-That way you will both have access to push changes to the repo on the main branch.
-Follow the three arrows in the image below to invite a collaborator.
-You will need their Github alias or email address to identify them.
-
-![new github repo5](images/image1.png "screenshot5")
-
-Once invited, the invitee will need to check their email and confirm the invite.
-Once confirmed, they will have the ability to push changes.
-
-A word of warning though, you will need to sync your local repo with remote everytime you begin working on the code, because your collaborators might have made recent changes that you do not have.
-To do this, you will need to run a git "Pull".
-
-![ ](images/image3.png "screenshot6")
-
-If you don't pull, then you will get errors when you want to finally push your work.
-There will be merge conflicts and a lot of frustration, so please always pull when you work on a project at the start of the day.
-You will also need to run a pull if anyone has made modification to the remote repo if they have used the GitHub.com webpage to make changes.
-
-### Step 6: learn about branches
+### Step 10: learn about branches
 
 For a short and relatively simple project such as assessment task 3, you will only need one branch called "main".
 That's why we will not be spending class time discussing or working on branches.
